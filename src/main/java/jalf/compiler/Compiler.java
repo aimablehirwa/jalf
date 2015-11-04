@@ -1,5 +1,6 @@
 package jalf.compiler;
 
+import jalf.Relation;
 import jalf.Visitor;
 import jalf.relation.algebra.*;
 
@@ -55,6 +56,14 @@ public class Compiler implements Visitor<Cog> {
     }
 
     ///
+    
+    
+    @Override
+	public Cog visit(Union relation) {
+    	 Cog left = relation.getLeft().accept(this);
+         Cog right = relation.getRight().accept(this);
+         return left.union(relation, right);
+	}
 
     @Override
     public Cog visit(LeafOperand relation) {
@@ -72,5 +81,13 @@ public class Compiler implements Visitor<Cog> {
     public Cog visit(Dum dum) {
         return dum.toCog();
     }
+
+	@Override
+	public Cog apply(Relation t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 
 }

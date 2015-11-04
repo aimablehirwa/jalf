@@ -5,6 +5,7 @@ import jalf.Visitor;
 import jalf.relation.algebra.Dee;
 import jalf.relation.algebra.Dum;
 import jalf.relation.algebra.Join;
+import jalf.relation.algebra.Union;
 import jalf.relation.algebra.LeafOperand;
 import jalf.relation.algebra.Project;
 import jalf.relation.algebra.Rename;
@@ -53,6 +54,11 @@ public class DefaultMapper implements Visitor<Optimized<?>> {
     public Optimized<?> visit(Join relation) {
         return new OptimizedJoin(optimizer, relation);
     }
+   
+	public Optimized<?> visit(Union relation) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     ///
 
@@ -69,5 +75,7 @@ public class DefaultMapper implements Visitor<Optimized<?>> {
     public Optimized<?> visit(Dum relation) {
         return new OptimizedDum(optimizer, relation);
     }
+
+	
 
 }

@@ -165,6 +165,12 @@ public class RelationType extends HeadingBasedType implements Type<Relation> {
         return new RelationType(this.heading.join(other.heading));
     }
 
+    public RelationType union(RelationType other) {
+    	return new RelationType(this.heading.join(other.heading));
+		
+	}
+    
+    
     public AttrList toAttrList() {
         return heading.toAttrList();
     }
@@ -200,5 +206,7 @@ public class RelationType extends HeadingBasedType implements Type<Relation> {
             throw new TypeException("No such attributes: " + which);
         }
     }
+
+	
 
 }

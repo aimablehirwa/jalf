@@ -28,5 +28,24 @@ public class UnionTest {
         Relation actual = union(left, right);
         assertEquals(expected, actual);
     }
+    
+    
+    @Test
+    public void testItWorksNotExpected() {
+        Relation left = relation(
+                tuple(SID, "S1"),
+                tuple(SID, "S2")
+        );
+        Relation right = relation(
+                tuple(SID, "S2"),
+                tuple(SID, "S3")
+        );
+        Relation expected = relation(
+                tuple(SID, "S1"),
+                tuple(SID, "S3")
+        );
+        Relation actual = union(left, right);
+        assertNotEquals(expected, actual);
+    }
 
 }

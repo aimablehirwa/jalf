@@ -188,6 +188,11 @@ public class Heading {
         return new Heading(joined);
     }
 
+    public Heading union(Heading other) {
+    	Map<AttrName, Type<?>> unioned =  new LinkedHashMap<>(this.attributes);
+		return  new Heading(unioned);
+	}
+    
     @Override
     public int hashCode() {
         return attributes.hashCode();
@@ -202,5 +207,7 @@ public class Heading {
         Heading other = (Heading) obj;
         return attributes.equals(other.attributes);
     }
+
+	
 
 }

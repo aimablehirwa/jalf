@@ -10,6 +10,7 @@ import jalf.relation.algebra.Project;
 import jalf.relation.algebra.Rename;
 import jalf.relation.algebra.Restrict;
 import jalf.relation.algebra.Select;
+import jalf.relation.algebra.Union;
 
 import java.util.function.Function;
 
@@ -74,6 +75,14 @@ public class Optimizer implements Visitor<Relation> {
         Relation right = relation.getRight().accept(this);
         return optimized(left).join(right);
     }
+    
+    
+   
+	public Relation visit(Union relation) {
+		Relation left = relation.getLeft().accept(this);
+        Relation right = relation.getRight().accept(this);
+        return optimized(left).union(right);
+	}
 
     ///
 
@@ -90,5 +99,13 @@ public class Optimizer implements Visitor<Relation> {
     public Relation visit(Dum relation) {
         return relation;
     }
+
+	@Override
+	public Relation apply(Relation t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 
 }

@@ -13,10 +13,12 @@ import jalf.relation.algebra.Project;
 import jalf.relation.algebra.Rename;
 import jalf.relation.algebra.Restrict;
 import jalf.relation.algebra.Select;
+import jalf.relation.algebra.Union;
 import jalf.type.TupleType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -141,5 +143,31 @@ public abstract class Cog {
         return new BaseCog(join, supplier);
     }
 
+    
+	public Cog union(Union union, Cog right) {
+		 AttrList on = union.getUnionAttrList();
+	        if (on!=null) {
+	            return tupleUnion(union, right);
+	        } else {
+	            return null;
+	        }
+	  }
+	
+	
+	
+	 /** Compiles a union */
+    private Cog tupleUnion(Union union, Cog right) {       
+        // stream compilation: concat + distinct
+        Supplier<Stream<Tuple>> supplier = () ->{
+        	 Stream<Tuple> leftStream = this.stream();
+             Stream<Tuple> rightStream = right.stream();
+             Optional<Stream<Tuple>> unionStream =Stream.of(leftStream,rightStream)
+            		 .distinct()
+            		 .reduce(Stream::concat);             
+			return unionStream.orElse(null);             
+            }; 
+                             
+         return new BaseCog(union, supplier);
+    }
 }
 

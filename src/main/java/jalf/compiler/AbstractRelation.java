@@ -7,6 +7,7 @@ import jalf.Renaming;
 import jalf.Selection;
 import jalf.Tuple;
 import jalf.relation.algebra.Join;
+import jalf.relation.algebra.Union;
 import jalf.relation.algebra.Project;
 import jalf.relation.algebra.Rename;
 import jalf.relation.algebra.Restrict;
@@ -61,7 +62,13 @@ public abstract class AbstractRelation implements Relation {
     public Relation join(Relation right) {
         return new Join(this, right);
     }
+    @Override
+    public Relation union(Relation right) {
+        return new Union(this, right);
+    }
 
+    
+    
     ///
 
     @Override
