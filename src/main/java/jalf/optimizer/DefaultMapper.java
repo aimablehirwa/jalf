@@ -55,10 +55,10 @@ public class DefaultMapper implements Visitor<Optimized<?>> {
         return new OptimizedJoin(optimizer, relation);
     }
    
-	public Optimized<?> visit(Union relation) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Optimized<?> visit(Union relation) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     ///
 
@@ -75,7 +75,5 @@ public class DefaultMapper implements Visitor<Optimized<?>> {
     public Optimized<?> visit(Dum relation) {
         return new OptimizedDum(optimizer, relation);
     }
-
-	
-
+    
 }

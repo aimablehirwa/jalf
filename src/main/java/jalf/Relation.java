@@ -79,9 +79,7 @@ public interface Relation {
      *
      * @param right another relation.
      * @return the resulting relation.
-     */
-    
-    
+     */  
     Relation union(Relation right);
 
     /**
@@ -112,8 +110,6 @@ public interface Relation {
      *
      * @return the size of the relation.
      */
-    long count();
-
-	
+    long count();	
 
 }

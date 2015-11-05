@@ -144,30 +144,29 @@ public abstract class Cog {
     }
 
     /** Default compilation of `union`. */
-	public Cog union(Union union, Cog right) {
-		 AttrList on = union.getUnionAttrList();
-	        if (on!=null) {
-	            return tupleUnion(union, right);
-	        } else {
-	            return null;
-	        }
-	  }
-	
-	
+    public Cog union(Union union, Cog right) {
+        AttrList on = union.getUnionAttrList();
+	    if (on!=null) {
+            return tupleUnion(union, right);
+	    } 
+	    else {
+            return null;
+        }
+    }
 	
 	 /** Compiles a union */
     private Cog tupleUnion(Union union, Cog right) {       
         // stream compilation: concat + distinct
         Supplier<Stream<Tuple>> supplier = () ->{
-        	 Stream<Tuple> leftStream = this.stream();
-             Stream<Tuple> rightStream = right.stream();
-             Optional<Stream<Tuple>> unionStream =Stream.of(leftStream,rightStream)
-            		 .distinct()
-            		 .reduce(Stream::concat);             
-			return unionStream.orElse(Stream.empty());             
-            }; 
-                             
+            Stream<Tuple> leftStream = this.stream();
+            Stream<Tuple> rightStream = right.stream();
+            Optional<Stream<Tuple>> unionStream =Stream.of(leftStream,rightStream)
+               .distinct()
+               .reduce(Stream::concat);             
+		    return unionStream.orElse(Stream.empty());             
+        };                             
          return new BaseCog(union, supplier);
     }
+    
 }
 

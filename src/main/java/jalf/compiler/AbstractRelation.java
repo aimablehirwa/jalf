@@ -62,13 +62,12 @@ public abstract class AbstractRelation implements Relation {
     public Relation join(Relation right) {
         return new Join(this, right);
     }
+    
     @Override
     public Relation union(Relation right) {
         return new Union(this, right);
     }
-
-    
-    
+ 
     ///
 
     @Override

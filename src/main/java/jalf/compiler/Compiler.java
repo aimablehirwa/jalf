@@ -54,14 +54,13 @@ public class Compiler implements Visitor<Cog> {
         return left.join(relation, right);
     }
 
-    ///
-    
-    
+    ///   
+  
     @Override
 	public Cog visit(Union relation) {
-    	 Cog left = relation.getLeft().accept(this);
-         Cog right = relation.getRight().accept(this);
-         return left.union(relation, right);
+        Cog left = relation.getLeft().accept(this);
+        Cog right = relation.getRight().accept(this);
+        return left.union(relation, right);
 	}
 
     @Override
@@ -80,9 +79,5 @@ public class Compiler implements Visitor<Cog> {
     public Cog visit(Dum dum) {
         return dum.toCog();
     }
-
-	
-
-	
-
+    
 }
