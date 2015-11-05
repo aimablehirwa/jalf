@@ -143,7 +143,7 @@ public abstract class Cog {
         return new BaseCog(join, supplier);
     }
 
-    
+    /** Default compilation of `union`. */
 	public Cog union(Union union, Cog right) {
 		 AttrList on = union.getUnionAttrList();
 	        if (on!=null) {
@@ -164,7 +164,7 @@ public abstract class Cog {
              Optional<Stream<Tuple>> unionStream =Stream.of(leftStream,rightStream)
             		 .distinct()
             		 .reduce(Stream::concat);             
-			return unionStream.orElse(null);             
+			return unionStream.orElse(Stream.empty());             
             }; 
                              
          return new BaseCog(union, supplier);

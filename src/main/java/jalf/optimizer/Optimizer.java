@@ -100,12 +100,7 @@ public class Optimizer implements Visitor<Relation> {
         return relation;
     }
 
-	@Override
-	public Relation apply(Relation t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	
 
 }

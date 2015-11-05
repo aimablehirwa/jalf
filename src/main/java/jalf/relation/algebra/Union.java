@@ -2,8 +2,8 @@ package jalf.relation.algebra;
 
 import java.util.Arrays;
 import java.util.List;
-
 import jalf.AttrList;
+import jalf.AttrName;
 import jalf.Relation;
 import jalf.Visitor;
 import jalf.type.RelationType;
@@ -54,8 +54,10 @@ public class Union extends BinaryOperator{
     public AttrList getUnionAttrList() {
         AttrList leftAttrs = left.getType().toAttrList();        
         AttrList rightAttrs = right.getType().toAttrList();
+        List<AttrName> leftAttrsList =leftAttrs.toList();
+        List<AttrName> rightAttrsList =rightAttrs.toList();
         
-        if (leftAttrs.equals(rightAttrs)){
+        if (rightAttrsList.size() ==leftAttrsList.size() && leftAttrsList.containsAll(rightAttrsList) ){
             return leftAttrs;           		
         }
         else {
