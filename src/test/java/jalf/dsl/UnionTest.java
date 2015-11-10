@@ -1,6 +1,7 @@
 package jalf.dsl;
 
 import jalf.Relation;
+import jalf.TypeException;
 
 import org.junit.Test;
 
@@ -28,4 +29,24 @@ public class UnionTest {
         Relation actual = union(left, right);
         assertEquals(expected, actual);
     }
+    
+    @Test
+    public void testHeaderIncompatile() {
+        Relation left = relation(
+        	    tuple(PID, "P1"),
+        		tuple(PID, "P2")
+        );
+        Relation right = relation(
+                tuple(SID, "S2"),
+                tuple(SID, "S3")
+        );
+        
+        try {
+            union(left, right);
+            assertTrue(false);
+        } catch (TypeException ex) {
+            assertEquals("Headings must have same attributes", ex.getMessage());
+        }       
+    }    
+   
  }
