@@ -56,8 +56,7 @@ public class DefaultMapper implements Visitor<Optimized<?>> {
     }
    
     public Optimized<?> visit(Union relation) {
-        // TODO Auto-generated method stub
-        return null;
+    	return new OptimizedUnion(optimizer, relation);
     }
 
     ///
