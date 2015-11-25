@@ -73,6 +73,14 @@ public interface Relation {
      * @return the resulting relation.
      */
     Relation join(Relation right);
+    
+    /**
+     * Union this relation with `right` one.
+     *
+     * @param right another relation.
+     * @return the resulting relation.
+     */  
+    Relation union(Relation right);
 
     /**
      * Filters tuples of this relation based on the predicate.
@@ -102,6 +110,6 @@ public interface Relation {
      *
      * @return the size of the relation.
      */
-    long count();
+    long count();	
 
 }

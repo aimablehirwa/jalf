@@ -188,6 +188,8 @@ public class Heading {
         return new Heading(joined);
     }
 
+   
+    
     @Override
     public int hashCode() {
         return attributes.hashCode();
@@ -202,5 +204,7 @@ public class Heading {
         Heading other = (Heading) obj;
         return attributes.equals(other.attributes);
     }
+
+	
 
 }
