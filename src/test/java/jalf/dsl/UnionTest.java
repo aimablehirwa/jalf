@@ -29,8 +29,8 @@ public class UnionTest {
         Relation actual = union(left, right);
         assertEquals(expected, actual);
     }
-    
-    @Test
+
+    @Test(expected=TypeException.class)
     public void testHeaderIncompatile() {
         Relation left = relation(
         	    tuple(PID, "P1"),
@@ -40,13 +40,7 @@ public class UnionTest {
                 tuple(SID, "S2"),
                 tuple(SID, "S3")
         );
-        
-        try {
-            union(left, right);
-            assertTrue(false);
-        } catch (TypeException ex) {
-            assertEquals("Headings must have same attributes", ex.getMessage());
-        }       
-    }    
-   
+        union(left, right);
+    }
+
  }
