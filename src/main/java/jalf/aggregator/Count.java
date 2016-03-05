@@ -5,8 +5,8 @@ import jalf.Tuple;
 import jalf.Type;
 import jalf.type.RelationType;
 
-public class Count  implements Aggregator<Integer>{
-    private Integer state;
+public class Count  implements Aggregator<Long>{
+    private Long state;
 
     public static Count count() {
         return new Count();
@@ -19,7 +19,7 @@ public class Count  implements Aggregator<Integer>{
 
     @Override
     public void init() {
-        this.state=new Integer(0);
+        this.state=new Long(0);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Count  implements Aggregator<Integer>{
     }
 
     @Override
-    public Integer finish() {
+    public Long finish() {
         return this.state;
     }
 
@@ -42,14 +42,10 @@ public class Count  implements Aggregator<Integer>{
         return new Count();
     }
 
-    @Override
-    public boolean notAllowedAggrAttr(RelationType t) {
-        return false;
-    }
 
     @Override
     public Type<?> getResultingType(RelationType type) {
-        return Type.scalarType(Integer.class);
+        return Type.scalarType(Long.class);
     }
 
 }

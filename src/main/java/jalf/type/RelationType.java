@@ -160,9 +160,6 @@ public class RelationType extends HeadingBasedType implements Type<Relation> {
             throw new TypeException("By can't contain as: by " + by + " as " + as);
 
         // check if the aggregator can aggregate on the aggregated attr
-        if (agg.notAllowedAggrAttr(this))
-            throw new TypeException("Aggregator can't aggregate on the aggregated attr " + attraggr);
-
         return new RelationType(heading.summarize(by, as, agg.getResultingType(this)));
     }
 

@@ -23,10 +23,10 @@ public class SummarizeTest {
     public void testItWorksAsExpectedbyCount() {
 
         Relation expected = relation(
-                tuple(SID, "S1", attr("count"), 6),
-                tuple(SID, "S2", attr("count"), 2),
-                tuple(SID, "S3", attr("count"), 1),
-                tuple(SID, "S4", attr("count"), 3)
+                tuple(SID, "S1", attr("count"), 6L),
+                tuple(SID, "S2", attr("count"), 2L),
+                tuple(SID, "S3", attr("count"), 1L),
+                tuple(SID, "S4", attr("count"), 3L)
                 );
 
         // summarize takes :

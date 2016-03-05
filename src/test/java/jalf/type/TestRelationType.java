@@ -229,7 +229,7 @@ public class TestRelationType {
         AttrList by = AttrList.attrs(SID);
         AttrName as = AttrName.attr("NEW");
         Count agg = new Count();
-        RelationType expected = RelationType.dress(SID, String.class, "NEW", Integer.class);
+        RelationType expected = RelationType.dress(SID, String.class, "NEW", Long.class);
         assertEquals(expected, r.summarize(by, agg, as));
     }
 

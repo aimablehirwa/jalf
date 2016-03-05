@@ -2,6 +2,7 @@ package jalf.aggregator;
 import jalf.AttrName;
 import jalf.Tuple;
 import jalf.Type;
+import jalf.TypeException;
 import jalf.type.RelationType;
 
 public class Max  implements Aggregator<Comparable<?>>{
@@ -52,16 +53,14 @@ public class Max  implements Aggregator<Comparable<?>>{
     }
 
     @Override
-    public boolean notAllowedAggrAttr(RelationType type) {
-        Type<?> t = type.getHeading().getTypeOf(this.aggregatedField);
-        if (Comparable.class.isAssignableFrom(t.getRepresentationClass()))
-            return false;
-        return true;
-    }
-
-    @Override
     public Type<?> getResultingType(RelationType type) {
-        return type.getTypeOf(this.aggregatedField);
+        Type<?> t = type.getHeading().getTypeOf(this.aggregatedField);
+        if (Comparable.class.isAssignableFrom(t.getRepresentationClass())){
+            return type.getTypeOf(this.aggregatedField);
+        }
+        else{
+            throw new TypeException("Aggregator can't aggregate on the aggregated attr " + this.aggregatedField);
+        }
     }
 
 }
