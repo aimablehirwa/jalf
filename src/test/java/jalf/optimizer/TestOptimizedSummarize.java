@@ -11,10 +11,11 @@ import static jalf.fixtures.SuppliersAndParts.PID;
 import static jalf.fixtures.SuppliersAndParts.QTY;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static jalf.fixtures.SuppliersAndParts.shipments;
-import jalf.Relation;
-import jalf.TypeException;
 
 import org.junit.Test;
+
+import jalf.Relation;
+import jalf.TypeException;
 
 public class TestOptimizedSummarize  extends OptimizerTest {
 
@@ -28,6 +29,19 @@ public class TestOptimizedSummarize  extends OptimizerTest {
         Relation operator = summarize(rel,attrs(SID, PID),count(),attr("count"));
         Relation optimized = optimized(operator).project(attrs(SID, attr("count")));
         Relation expected = summarize(rel, attrs(SID, PID), count(), attr("count")).project(attrs(SID, attr("count")));
+        assertSameExpression(expected, optimized);
+
+    }
+
+    // projet optimization
+    // no As in project
+    // pas de count dans project on oublie summarize
+    @Test
+    public void testProjectnoAs() {
+
+        Relation operator = summarize(rel,attrs(SID, PID),count(),attr("count"));
+        Relation optimized = optimized(operator).project(attrs(SID));
+        Relation expected = rel.project(attrs(SID));
         assertSameExpression(expected, optimized);
 
     }
@@ -66,13 +80,26 @@ public class TestOptimizedSummarize  extends OptimizerTest {
     @Test
     public void testRestrict(){
 
-        // normal execution
+        // restrict not on as
         Relation operator =  summarize(rel,attrs(SID, PID), count(), attr("count"));
         Relation optimized = optimized(operator).restrict(eq(SID, "S1"));
 
         Relation expected = rel
                 .restrict(eq(SID, "S1"))
                 .summarize(attrs(SID, PID), count(), attr("count"));
+
+        assertSameExpression(expected, optimized);
+    }
+
+    @Test
+    public void testRestrictPredMax(){
+        // restrict  on as
+        Relation operator = summarize(rel,attrs(SID), max(PID),attr("MAX_PID"));
+        Relation optimized = optimized(operator).restrict(eq(attr("MAX_PID"),"P6"));
+
+        Relation expected = rel
+                .summarize(attrs(SID), max(PID),attr("MAX_PID"))
+                .restrict(eq(attr("MAX_PID"),"P6"));
 
         assertSameExpression(expected, optimized);
     }

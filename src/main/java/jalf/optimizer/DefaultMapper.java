@@ -45,6 +45,7 @@ public class DefaultMapper implements Visitor<Optimized<?>> {
     public Optimized<?> visit(Project relation) {
         return new OptimizedProject(optimizer, relation);
     }
+
     @Override
     public Optimized<?>  visit(Summarize relation) {
         return new OptimizedSummarize(optimizer, relation);
