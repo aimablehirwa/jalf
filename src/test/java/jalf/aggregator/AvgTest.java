@@ -13,10 +13,13 @@ import static jalf.fixtures.SuppliersAndParts.SID;
 import static jalf.fixtures.SuppliersAndParts.WEIGHT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import jalf.Relation;
+import jalf.Type;
+import jalf.TypeException;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-
-import jalf.Relation;
 ;
 
 public class AvgTest {
@@ -38,6 +41,16 @@ public class AvgTest {
             tuple(PID, "P4", NAME, "Screw", COLOR, "Red",   WEIGHT, 14.0, CITY, "London"),
             tuple(PID, "P5", NAME, "Cam",   COLOR, "Blue",  WEIGHT, 12.0, CITY, "Paris"),
             tuple(PID, "P6", NAME, "Cog",   COLOR, "Red",   WEIGHT, 19.0, CITY, "London"));
+
+    Relation rA = relation(
+            heading(COLOR, String.class, PID, String.class, QTY, A.class),
+            tuple(COLOR, "S1", PID, "P1", QTY, new A(300)),
+            tuple(COLOR, "S1", PID, "P2", QTY, new A(200)),
+            tuple(COLOR, "S1", PID, "P3", QTY, new A(400)),
+            tuple(COLOR, "S1", PID, "P4", QTY, new A(200)),
+            tuple(COLOR, "S1", PID, "P5", QTY, new A(100)),
+            tuple(COLOR, "S1", PID, "P6", QTY, new A(100)));
+
     @Test
     public void testItWorksAsExpectedbyAvgInteger() {
         Avg a = avg(QTY);
@@ -61,6 +74,37 @@ public class AvgTest {
         rdouble.stream().forEach(t -> a.accumulate(t));
         double expected = 15.166666667;
         assertEquals(expected, a.finish().doubleValue(), 0.001);
+    }
+
+    @Test
+    public void testgetResultingType1(){
+        Avg a = avg(QTY);
+        Type<?> t = a.getResultingType(r.getType());
+        assertEquals(t, Type.scalarType(Double.class));
+    }
+
+    @Test(expected=TypeException.class)
+    public void testgetResultingType2(){
+        Avg a = avg(SID);
+        a.getResultingType(r.getType());
+    }
+
+    @Test
+    public void testgetResultingType3(){
+        Avg a = avg(QTY);
+        Type<?> t = a.getResultingType(rA.getType());
+        assertEquals(t, Type.scalarType(Double.class));
+    }
+
+    /**
+     * class used to test the case where the type of as not directly extends Number but
+     * a subclass of Number
+     *
+     */
+    class A extends AtomicLong{
+        public A(long a){
+            super(a);
+        }
     }
 
 }
