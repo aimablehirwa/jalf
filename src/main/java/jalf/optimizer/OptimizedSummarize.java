@@ -16,11 +16,13 @@ public class OptimizedSummarize extends Optimized<Summarize>{
     public Relation project(AttrList attributes) {
         Relation r = operator.getOperand();
         if (attributes.contains(operator.getAs())==false){
-            r =  r.project(attributes);
+            r = optimized(r).project(attributes);
         }
         else{
+
             r = optimized(r).summarize(operator.getBy(), operator.getAggregator(), operator.getAs());
-            r = r.project(attributes);
+            r =  r.project(attributes);
+
         }
 
         return r;
@@ -35,13 +37,12 @@ public class OptimizedSummarize extends Optimized<Summarize>{
         AttrList predattrs=pred.getReferencedAttributes();
         if (predattrs.contains(operator.getAs())==false){
             r = optimized(r).restrict(pred);
-            r = optimized(r).summarize(operator.getBy(), operator.getAggregator(), operator.getAs());
+            r = r.summarize(operator.getBy(), operator.getAggregator(), operator.getAs());
 
         }
         else{
             r = optimized(r).summarize(operator.getBy(), operator.getAggregator(), operator.getAs());
             r = r.restrict(pred);
-
         }
         return r;
     }

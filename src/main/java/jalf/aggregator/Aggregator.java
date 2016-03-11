@@ -6,8 +6,8 @@ import jalf.Type;
 import jalf.type.RelationType;
 
 public interface Aggregator<T> {
-    void init();
-    void accumulate(Tuple t);
+    public void init();
+    public void accumulate(Tuple t);
     public T finish();
     public AttrName getAggregatedField();
     public Aggregator<T> duplicate();

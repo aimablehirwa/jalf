@@ -18,7 +18,7 @@ public class Count  implements Aggregator<Long>{
     }
 
     @Override
-    public void init() {
+    public final void init() {
         this.state=new Long(0);
     }
 

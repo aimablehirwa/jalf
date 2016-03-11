@@ -20,7 +20,7 @@ public class Max  implements Aggregator<Comparable<?>>{
     }
 
     @Override
-    public void init() {
+    public final void init() {
         this.state=null;
     }
 

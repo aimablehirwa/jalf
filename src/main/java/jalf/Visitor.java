@@ -32,8 +32,6 @@ public interface Visitor<R> extends Function<Relation,R> {
 
     R visit(Restrict relation);
 
-    R visit(Summarize relation);
-
     ///
 
     R visit(Join relation);
@@ -43,6 +41,8 @@ public interface Visitor<R> extends Function<Relation,R> {
     R visit(Intersect relation);
 
     R visit(Minus relation);
+
+    R visit(Summarize relation);
 
     ///
 

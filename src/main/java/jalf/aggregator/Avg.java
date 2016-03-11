@@ -28,7 +28,7 @@ public class  Avg implements Aggregator<Double>{
     }
 
     @Override
-    public void init() {
+    public final void init() {
         this.state=new Double(0);
         this.counttuple=new Integer(0);
     }
