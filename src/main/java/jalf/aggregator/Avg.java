@@ -52,19 +52,12 @@ public class  Avg implements Aggregator<Double>{
 
     @Override
     public Type<?> getResultingType(RelationType type) {
-        Class<?> superclass = null;
-        Class<?> subclass = null;
         Type<?> t = type.getHeading().getTypeOf(this.aggregatedField);
-        subclass= t.getRepresentationClass();
-        superclass =subclass.getSuperclass();
-        while (superclass != null) {
-            if (Number.class.isAssignableFrom(superclass)){
-                return Type.scalarType(Double.class);
-            }
-            subclass = superclass;
-            superclass = subclass.getSuperclass();
+        if (Number.class.isAssignableFrom(t.getRepresentationClass())){
+            return Type.scalarType(Double.class);
         }
-        throw new TypeException("Aggregator can't aggregate on the aggregated attr " + this.aggregatedField);
+        else{
+            throw new TypeException("Aggregator can't aggregate on the aggregated attr " + this.aggregatedField);            }
     }
 
 }
