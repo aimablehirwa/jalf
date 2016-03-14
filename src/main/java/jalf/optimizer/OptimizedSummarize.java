@@ -15,7 +15,7 @@ public class OptimizedSummarize extends Optimized<Summarize>{
     @Override
     public Relation project(AttrList attributes) {
         Relation r = operator.getOperand();
-        if (attributes.contains(operator.getAs())==false){
+        if (!attributes.contains(operator.getAs())){
             r = optimized(r).project(attributes);
         }
         else{
@@ -35,7 +35,7 @@ public class OptimizedSummarize extends Optimized<Summarize>{
     public Relation restrict(Predicate pred) {
         Relation r = operator.getOperand();
         AttrList predattrs=pred.getReferencedAttributes();
-        if (predattrs.contains(operator.getAs())==false){
+        if (!predattrs.contains(operator.getAs())){
             r = optimized(r).restrict(pred);
             r = r.summarize(operator.getBy(), operator.getAggregator(), operator.getAs());
 

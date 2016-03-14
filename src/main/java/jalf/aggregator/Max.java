@@ -56,7 +56,7 @@ public class Max  implements Aggregator<Comparable<?>>{
     public Type<?> getResultingType(RelationType type) {
         Type<?> t = type.getHeading().getTypeOf(this.aggregatedField);
         if (Comparable.class.isAssignableFrom(t.getRepresentationClass())){
-            return type.getTypeOf(this.aggregatedField);
+            return t;
         }
         else{
             throw new TypeException("Aggregator can't aggregate on the aggregated attr " + this.aggregatedField);

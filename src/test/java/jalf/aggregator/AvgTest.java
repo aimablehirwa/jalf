@@ -12,14 +12,14 @@ import static jalf.fixtures.SuppliersAndParts.QTY;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static jalf.fixtures.SuppliersAndParts.WEIGHT;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import jalf.Relation;
-import jalf.Type;
-import jalf.TypeException;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
+
+import jalf.Relation;
+import jalf.Type;
+import jalf.TypeException;
 ;
 
 public class AvgTest {
@@ -58,15 +58,6 @@ public class AvgTest {
         double expected = 216.6666666;
         assertEquals(expected, a.finish().doubleValue(), 0.001);
     }
-
-    @Test
-    public void testItWrongWorksAvgInteger() {
-        Avg a = avg(QTY);
-        r.stream().forEach(t -> a.accumulate(t));
-        double expected = 211.666666;
-        assertNotEquals(expected, a.finish().doubleValue(), 0.001);
-    }
-
 
     @Test
     public void testItWorksAsExpectedbyAvgDouble() {

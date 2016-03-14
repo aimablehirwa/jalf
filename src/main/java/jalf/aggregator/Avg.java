@@ -58,7 +58,7 @@ public class  Avg implements Aggregator<Double>{
         subclass= t.getRepresentationClass();
         superclass =subclass.getSuperclass();
         while (superclass != null) {
-            if (superclass == Number.class){
+            if (Number.class.isAssignableFrom(superclass)){
                 return Type.scalarType(Double.class);
             }
             subclass = superclass;
