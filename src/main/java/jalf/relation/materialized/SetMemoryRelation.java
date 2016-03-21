@@ -1,16 +1,6 @@
 package jalf.relation.materialized;
 
 import static jalf.util.CollectionUtils.setOf;
-import jalf.Relation;
-import jalf.Tuple;
-import jalf.TypeException;
-import jalf.Visitor;
-import jalf.compiler.BaseCog;
-import jalf.compiler.Cog;
-import jalf.compiler.Compiler;
-import jalf.type.RelationType;
-import jalf.type.TupleType;
-import jalf.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -18,6 +8,18 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+
+import jalf.Relation;
+import jalf.Tuple;
+import jalf.TypeException;
+import jalf.Visitor;
+import jalf.compiler.BaseCog;
+import jalf.compiler.Cog;
+import jalf.compiler.Compiler;
+import jalf.constraint.Key;
+import jalf.type.RelationType;
+import jalf.type.TupleType;
+import jalf.util.CollectionUtils;
 
 /**
  * MemoryRelation where an actual set of tuples is used as internal
@@ -29,9 +31,17 @@ public class SetMemoryRelation extends MemoryRelation {
 
     private Collection<Tuple> tuples;
 
+    private Key key;
+
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples) {
         this.type = type;
         this.tuples = tuples;
+    }
+
+    public SetMemoryRelation(RelationType type, Set<Tuple> tuples,Key key) {
+        this.type = type;
+        this.tuples = tuples;
+        this.key=key;
     }
 
     public SetMemoryRelation(RelationType type, Tuple[] tuples) {
