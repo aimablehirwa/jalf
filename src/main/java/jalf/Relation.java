@@ -2,6 +2,7 @@ package jalf;
 
 import java.util.stream.Stream;
 
+import jalf.constraint.Key;
 import jalf.relation.algebra.Dee;
 import jalf.relation.algebra.Dum;
 import jalf.type.RelationType;
@@ -37,6 +38,14 @@ public interface Relation {
      * @return the type of the relation.
      */
     RelationType getType();
+
+
+    /**
+     * Returns the key of this relation.
+     *
+     * @return the  primary key of the relation.
+     */
+    Key getKey();
 
     /**
      * Returns the type of the tuples belonging to this relation.

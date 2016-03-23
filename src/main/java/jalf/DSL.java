@@ -2,6 +2,7 @@ package jalf;
 
 import java.util.stream.Stream;
 
+import jalf.constraint.Key;
 import jalf.relation.materialized.SetMemoryRelation;
 import jalf.type.Heading;
 import jalf.type.RelationType;
@@ -81,6 +82,13 @@ public class DSL {
         return Predicate.lte(left, right);
     }
 
+
+    // Key
+
+    public static Key key(AttrList attrkey) {
+        return Key.primary(attrkey);
+    }
+
     // Tuple
 
     public static Tuple tuple(Object... keyValuePairs) {
@@ -92,6 +100,9 @@ public class DSL {
     public static Relation relation(RelationType type, Tuple... tuples) {
         return SetMemoryRelation.tuples(type, tuples);
     }
+    public static Relation relation(RelationType type,Key key, Tuple... tuples) {
+        return SetMemoryRelation.tuples(type,key, tuples);
+    }
 
     public static Relation relation(Heading heading, Tuple... tuples) {
         return relation(RelationType.dress(heading), tuples);
@@ -99,6 +110,10 @@ public class DSL {
 
     public static Relation relation(Tuple... tuples) {
         return relation(RelationType.infer(Stream.of(tuples)), tuples);
+    }
+
+    public static Relation relation(Key key, Tuple... tuples ) {
+        return relation(RelationType.infer(Stream.of(tuples)),key, tuples);
     }
 
     // Relational algebra

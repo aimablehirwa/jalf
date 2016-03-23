@@ -33,11 +33,16 @@ public class SetMemoryRelation extends MemoryRelation {
 
     private Key key;
 
+
+    //no key préciser tout les attributs deviennent la clef  de la relation
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples) {
         this.type = type;
         this.tuples = tuples;
+        Key attrheading=new Key(type.getHeading().toAttrList());
+        this.key= attrheading;
     }
 
+    //ici on précise la clef
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples,Key key) {
         this.type = type;
         this.tuples = tuples;
@@ -46,6 +51,10 @@ public class SetMemoryRelation extends MemoryRelation {
 
     public SetMemoryRelation(RelationType type, Tuple[] tuples) {
         this(type, setOf(tuples));
+    }
+
+    public SetMemoryRelation(RelationType type, Tuple[] tuples, Key key) {
+        this(type, setOf(tuples),key);
     }
 
     /**
@@ -73,10 +82,31 @@ public class SetMemoryRelation extends MemoryRelation {
         }
     }
 
+    public static Relation tuples(RelationType type,Key key, Tuple...tuples) {
+        TupleType ttype = type.toTupleType();
+        Optional<Tuple> fail = Stream.of(tuples)
+                .filter(t -> !ttype.contains(t))
+                .findAny();
+        if (fail.isPresent()) {
+            Tuple t = fail.get();
+            throw new TypeException("Relation type mismatch: " + t);
+        } else {
+            return new SetMemoryRelation(type, tuples,key);
+        }
+    }
+
+
     @Override
     public RelationType getType() {
         return type;
     }
+
+
+    @Override
+    public Key getKey() {
+        return this.key;
+    }
+
 
     @Override
     public Cog toCog(Compiler compiler) {
@@ -130,5 +160,6 @@ public class SetMemoryRelation extends MemoryRelation {
                 Collector.Characteristics.CONCURRENT,
                 Collector.Characteristics.UNORDERED);
     }
+
 
 }

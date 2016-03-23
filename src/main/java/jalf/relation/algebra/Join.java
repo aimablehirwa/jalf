@@ -6,6 +6,7 @@ import java.util.List;
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
+import jalf.constraint.Key;
 import jalf.type.RelationType;
 
 /**
@@ -64,13 +65,19 @@ public class Join extends BinaryOperator {
     }
 
     @Override
-   public List<Object> getArguments() {
+    public List<Object> getArguments() {
         return Arrays.asList();
     }
 
     @Override
     public <R> R accept(Visitor<R> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public Key getKey() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

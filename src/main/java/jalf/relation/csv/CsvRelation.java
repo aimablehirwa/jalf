@@ -1,20 +1,6 @@
 package jalf.relation.csv;
 
 import static jalf.util.CollectionUtils.mapOf;
-import jalf.AttrName;
-import jalf.Relation;
-import jalf.Tuple;
-import jalf.Type;
-import jalf.Visitor;
-import jalf.compiler.AbstractRelation;
-import jalf.compiler.BaseCog;
-import jalf.compiler.Cog;
-import jalf.compiler.Compiler;
-import jalf.relation.algebra.LeafOperand;
-import jalf.relation.materialized.SetMemoryRelation;
-import jalf.type.Heading;
-import jalf.type.RelationType;
-import jalf.type.TupleType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +12,21 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import au.com.bytecode.opencsv.CSVReader;
+import jalf.AttrName;
+import jalf.Relation;
+import jalf.Tuple;
+import jalf.Type;
+import jalf.Visitor;
+import jalf.compiler.AbstractRelation;
+import jalf.compiler.BaseCog;
+import jalf.compiler.Cog;
+import jalf.compiler.Compiler;
+import jalf.constraint.Key;
+import jalf.relation.algebra.LeafOperand;
+import jalf.relation.materialized.SetMemoryRelation;
+import jalf.type.Heading;
+import jalf.type.RelationType;
+import jalf.type.TupleType;
 
 public class CsvRelation extends AbstractRelation implements LeafOperand {
 
@@ -138,6 +139,12 @@ public class CsvRelation extends AbstractRelation implements LeafOperand {
             }
             return reader;
         }
+    }
+
+    @Override
+    public Key getKey() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

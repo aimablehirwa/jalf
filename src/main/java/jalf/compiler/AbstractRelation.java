@@ -1,5 +1,8 @@
 package jalf.compiler;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import jalf.AttrList;
 import jalf.Predicate;
 import jalf.Relation;
@@ -15,9 +18,6 @@ import jalf.relation.algebra.Restrict;
 import jalf.relation.algebra.Select;
 import jalf.relation.algebra.Union;
 import jalf.type.TupleType;
-
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Parent (abstract) class of all relation implementations.
@@ -38,8 +38,6 @@ public abstract class AbstractRelation implements Relation {
         }
         return tupleType;
     }
-
-    ///
 
     @Override
     public Relation select(Selection selection) {

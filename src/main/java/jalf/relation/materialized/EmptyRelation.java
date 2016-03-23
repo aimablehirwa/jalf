@@ -1,14 +1,15 @@
 package jalf.relation.materialized;
 
+import java.util.Collections;
+
 import jalf.Relation;
 import jalf.Tuple;
 import jalf.Visitor;
 import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
 import jalf.compiler.Compiler;
+import jalf.constraint.Key;
 import jalf.type.RelationType;
-
-import java.util.Collections;
 
 public class EmptyRelation extends MemoryRelation {
 
@@ -41,6 +42,12 @@ public class EmptyRelation extends MemoryRelation {
     @Override
     public boolean equals(Relation other) {
         return !other.stream().findAny().isPresent();
+    }
+
+    @Override
+    public Key getKey() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

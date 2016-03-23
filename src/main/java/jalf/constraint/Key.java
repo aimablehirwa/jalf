@@ -8,8 +8,12 @@ public class Key  implements constraint{
 
     public Key(AttrList attrsKey) {
         super();
-        this.setAttrsKey(attrsKey);
+        this.attrsKey=attrsKey;
     }
+    public  static Key primary(AttrList attrsKey) {
+        return new Key(attrsKey);
+    }
+
 
 
     @Override
@@ -23,9 +27,16 @@ public class Key  implements constraint{
         return attrsKey;
     }
 
-
-    public void setAttrsKey(AttrList attrsKey) {
-        this.attrsKey = attrsKey;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || !(o instanceof Key))
+            return false;
+        Key otherkey = (Key) o;
+        return (this.attrsKey.equals(otherkey.attrsKey));
     }
+
+
 
 }

@@ -6,6 +6,7 @@ import jalf.Relation;
 import jalf.Renaming;
 import jalf.Visitor;
 import jalf.compiler.AbstractRelation;
+import jalf.constraint.Key;
 import jalf.relation.materialized.EmptyRelation;
 import jalf.type.RelationType;
 
@@ -122,6 +123,12 @@ public class Optimized<R extends Relation> extends AbstractRelation {
 
     public boolean sameExpressionAs(Relation other) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Key getKey() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

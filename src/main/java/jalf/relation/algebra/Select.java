@@ -1,12 +1,13 @@
 package jalf.relation.algebra;
 
+import java.util.Arrays;
+import java.util.List;
+
 import jalf.Relation;
 import jalf.Selection;
 import jalf.Visitor;
+import jalf.constraint.Key;
 import jalf.type.RelationType;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class Select extends UnaryOperator {
 
@@ -55,6 +56,12 @@ public class Select extends UnaryOperator {
     @Override
     public List<Object> getArguments() {
         return Arrays.asList(selection);
+    }
+
+    @Override
+    public Key getKey() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

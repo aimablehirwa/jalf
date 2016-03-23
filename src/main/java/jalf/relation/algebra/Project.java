@@ -6,6 +6,7 @@ import java.util.List;
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
+import jalf.constraint.Key;
 import jalf.type.RelationType;
 
 /**
@@ -41,6 +42,7 @@ public class Project extends UnaryOperator {
         return operand.getType().project(attributes);
     }
 
+    @Override
     public Relation getOperand() {
         return operand;
     }
@@ -57,6 +59,12 @@ public class Project extends UnaryOperator {
     @Override
     public <R> R accept(Visitor<R> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public Key getKey() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

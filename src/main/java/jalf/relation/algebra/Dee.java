@@ -1,14 +1,15 @@
 package jalf.relation.algebra;
 
+import java.util.Collections;
+
 import jalf.Relation;
 import jalf.Tuple;
 import jalf.Visitor;
 import jalf.compiler.AbstractRelation;
 import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
+import jalf.constraint.Key;
 import jalf.type.RelationType;
-
-import java.util.Collections;
 
 /**
  * Dee, the relation with no attribute but one tuple.
@@ -50,9 +51,15 @@ public class Dee extends AbstractRelation {
             return true;
         if (arg == null || !(arg instanceof Relation))
             return false;
-        Relation other = (Relation) arg;
+        Relation other = arg;
         return TYPE.equals(other.getType()) &&
                 other.stream().findFirst().isPresent();
+    }
+
+    @Override
+    public Key getKey() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
