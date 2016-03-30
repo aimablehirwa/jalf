@@ -21,20 +21,15 @@ public class Key  implements constraint{
         return new Key(attrsKey);
     }
 
+    @Override
     public boolean Check(Relation r, Key key) {
         //vérifier si les clef appartienne bien au atributs de la relation
         AttrList attrsrelation= r.getType().getHeading().toAttrList();
         AttrList intersect= getIntersectKeyAttr(attrsrelation,key);
         if (intersect.equals(key.getAttrsKey())){
             // deuxieme vérification sur la cardinality apres projection
-
-            TupleType tt = r.getTupleType();
-            Supplier<Stream<Tuple>> supplier;
-            supplier = () -> r.stream()
-                    .map(t -> t.project(intersect, tt))
-                    .distinct();
-            long lproject= supplier.get().count();
-            System.out.println(lproject);
+            // sur la clef
+            long lproject= getCardinalityKeyProject(r,key.getAttrsKey());
             return(lproject ==r.cardinality());
         }
         else{
@@ -46,12 +41,18 @@ public class Key  implements constraint{
         AttrList attrskey= key.getAttrsKey();
         return  attrsrelation.intersect(attrskey);
     }
-
+    private long getCardinalityKeyProject( Relation r , AttrList intersect) {
+        TupleType tt = r.getTupleType();
+        Supplier<Stream<Tuple>> supplier;
+        supplier = () -> r.stream()
+                .map(t -> t.project(intersect, tt))
+                .distinct();
+        return supplier.get().count();
+    }
 
     public AttrList getAttrsKey() {
         return attrsKey;
     }
-
 
     public Key rename(Renaming renaming) {
         AttrList newkey=AttrList.attrs(AttrName.attr("rid"));
@@ -67,13 +68,5 @@ public class Key  implements constraint{
         Key otherkey = (Key) o;
         return (this.attrsKey.equals(otherkey.attrsKey));
     }
-
-    @Override
-    public boolean Check(Relation r) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-
 
 }
