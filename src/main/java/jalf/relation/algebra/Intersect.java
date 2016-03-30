@@ -74,4 +74,10 @@ public class Intersect extends BinaryOperator{
         return null;
     }
 
+    @Override
+    public void setKey(Key key) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

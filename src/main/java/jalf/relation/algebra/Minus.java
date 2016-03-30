@@ -72,4 +72,10 @@ public class Minus extends BinaryOperator{
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public void setKey(Key key) {
+        // TODO Auto-generated method stub
+
+    }
 }

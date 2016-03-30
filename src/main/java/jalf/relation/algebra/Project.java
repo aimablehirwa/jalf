@@ -63,8 +63,14 @@ public class Project extends UnaryOperator {
 
     @Override
     public Key getKey() {
+        return operand.getKey();
+    }
+
+
+    @Override
+    public void setKey(Key key) {
         // TODO Auto-generated method stub
-        return null;
+
     }
 
 }

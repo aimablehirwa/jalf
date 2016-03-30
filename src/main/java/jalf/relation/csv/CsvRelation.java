@@ -147,4 +147,10 @@ public class CsvRelation extends AbstractRelation implements LeafOperand {
         return null;
     }
 
+    @Override
+    public void setKey(Key key) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

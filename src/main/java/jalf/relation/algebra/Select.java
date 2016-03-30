@@ -64,4 +64,10 @@ public class Select extends UnaryOperator {
         return null;
     }
 
+    @Override
+    public void setKey(Key key) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

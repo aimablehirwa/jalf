@@ -17,6 +17,7 @@ import jalf.Relation;
 import jalf.Renaming;
 import jalf.Selection;
 import jalf.Tuple;
+import jalf.constraint.Key;
 import jalf.relation.algebra.Intersect;
 import jalf.relation.algebra.Join;
 import jalf.relation.algebra.Minus;
@@ -71,11 +72,19 @@ public abstract class Cog {
     public Cog project(Project projection) {
         AttrList on = projection.getAttributes();
         TupleType tt = projection.getTupleType();
-
-        // stream compilation: map projection + distinct
-        Supplier<Stream<Tuple>> supplier = () -> this.stream()
-                .map(t -> t.project(on, tt))
-                .distinct();
+        Key key=projection.getKey();
+        Supplier<Stream<Tuple>> supplier;
+        //avoid duplicate
+        if (key.getIntersectKeyAttr(on,key).equals(key.getAttrsKey())){
+            supplier = () -> this.stream()
+                    .map(t -> t.project(on, tt));
+        }
+        else{
+            // stream compilation: map projection + distinct
+            supplier = () -> this.stream()
+                    .map(t -> t.project(on, tt))
+                    .distinct();
+        }
 
         return new BaseCog(projection, supplier);
     }

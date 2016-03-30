@@ -47,6 +47,10 @@ public interface Relation {
      */
     Key getKey();
 
+
+
+    void setKey(Key key);
+
     /**
      * Returns the type of the tuples belonging to this relation.
      *
@@ -136,5 +140,6 @@ public interface Relation {
      * @return the cardinality of the relation, i.e. the number of tuples.
      */
     long cardinality();
+
 
 }

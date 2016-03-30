@@ -1,12 +1,12 @@
 package jalf.dsl;
 
-import static jalf.DSL.attrs;
 import static jalf.DSL.key;
 import static jalf.DSL.relation;
 import static jalf.DSL.tuple;
 import static jalf.fixtures.SuppliersAndParts.NAME;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
@@ -36,23 +36,29 @@ public class RelationTest {
                 tuple(SID, "S1", NAME, "Smith"),
                 tuple(SID, "S3", NAME, "Blake")
                 );
+        //on ne specifie pas la clef
+        // donc doit renvoyer tous les attributs de la relation
         Key k1=r.getKey();
-        Key k2=key(attrs(SID,NAME));
+        Key k2=key(SID,NAME);
+        Key k3=key(SID);
         assertEquals(k1, k2);
+        assertNotEquals(k1, k3);
     }
 
     @Test
     public void testItAllowsSpecifyingTheTypekeyVerifKey() {
-
+        //ici on  specifie la clef
         Relation r = relation(
                 RelationType.dress(SID, String.class,NAME,String.class),
-                key(attrs(SID)),
+                key(SID),
                 tuple(SID, "S1", NAME, "Smith"),
                 tuple(SID, "S3", NAME, "Blake")
                 );
         Key k1=r.getKey();
-        Key k2=key(attrs(SID));
+        Key k2=key(SID);
+        Key k3=key(SID,NAME);
         assertEquals(k1, k2);
+        assertNotEquals(k1, k3);
     }
 
 

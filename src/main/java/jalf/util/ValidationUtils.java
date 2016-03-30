@@ -22,4 +22,9 @@ public class ValidationUtils {
             throw new IllegalArgumentException(msg);
         }
     }
+    public static void validate(String msg, long arg, long expected) {
+        if (arg != expected) {
+            throw new IllegalArgumentException(msg);
+        }
+    }
 }

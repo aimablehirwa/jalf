@@ -3,6 +3,8 @@ package jalf.constraint;
 import static jalf.DSL.attr;
 import static jalf.DSL.attrs;
 import static jalf.DSL.eq;
+import static jalf.DSL.heading;
+import static jalf.DSL.key;
 import static jalf.DSL.relation;
 import static jalf.DSL.renaming;
 import static jalf.DSL.tuple;
@@ -10,6 +12,8 @@ import static jalf.fixtures.SuppliersAndParts.PID;
 import static jalf.fixtures.SuppliersAndParts.QTY;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static jalf.fixtures.SuppliersAndParts.shipments;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
@@ -24,17 +28,19 @@ public class KeyTest {
     public void testCheckUniquenessTrue(){
         // test if there is only one tuple that have the key
         Relation r = shipments();
-        // r.setKeys(key(SID, PID));
-        //Key k1 = key(SID, PID);
-        //assertTrue(k1.checkUniqueness());
+        r.setKey(key(SID, PID));
+        Key k1 = key(SID, PID);
+        assertEquals(k1,r.getKey());
     }
 
     @Test
     public void testCheckUniquenessFalse(){
         Relation r = shipments();
-        // r.setKeys(key(SID));
-        // Key k1 = key(SID);
-        //assertFalse(k1.checkUniqueness(r));
+        // la clef n'est pas bonne
+        r.setKey(key(SID));
+        // la clef est donc tous les attributs
+        Key k1 = key(SID,PID,QTY);
+        assertEquals(r.getKey(),k1);
     }
 
     // test related to key itself
@@ -42,9 +48,9 @@ public class KeyTest {
     @Test
     public void testIsASubKeyTrue1(){
         Relation r = shipments();
-        // r.setKeys(key(SID, PID));
-        // Key k1 = key(SID, PID);
-
+        r.setKey(key(SID, PID));
+        Key k1 = key(SID, PID);
+        assertEquals(r.getKey(),k1);
         // assertTrue(k1.checkUniqueness());
         //assertTrue(k1.isSubKeys(r));
     }
@@ -71,41 +77,12 @@ public class KeyTest {
     @Test
     public void testIsASubKeyFalse(){
         Relation r = shipments();
-        // r.setKeys(key(SID, PID));
-        // Key k1 = key(SID, attr("cid"));
+        r.setKey(key(SID, PID));
+        Key k1 = key(SID, attr("cid"));
 
-        // assertFalse(k1.isSubKeys(r));
+        assertNotEquals(r.getKey(),k1);
     }
 
-    @Test
-    public void testIsAKeyOfRel(){
-        // check if it is a key of the relation
-        Relation r = shipments();
-        // Key k = key(SID, PID);
-        // assertTrue(k1.isAKeyOfRel());
-    }
-
-    @Test
-    public void testIntersectionOfKeys(){
-        // Key k1 = key(SID, PID);
-        //Key k2 = key(SID);
-
-        //Key actual = k1.intersect(k2);
-        // Key expected = key(SID);
-
-        // assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testUnionOfKeys(){
-        // Key k1 = key(SID, PID);
-        // Key k2 = key(attr("cid"));
-
-        // Key actual = k1.union(k2);
-        // Key expected = key(SID, PID, attr("cid"));
-
-        // assertEquals(expected, actual);
-    }
 
     @Test
     public void testRenameKey1(){
@@ -147,11 +124,11 @@ public class KeyTest {
     @Test
     public void testProjectOperatorWithKey1(){
         // test Ps intersect Kx = null
-        // the key of the projection must be the header of the projection
+        //on ne sert pas de la clef
         Relation r = shipments();
-        // r.setKeys(key(SID, PID));
-        // r.project(attrs(QTY));
-        //Keys actual = r.getKeys();
+        r.setKey(key(SID, PID));
+        r.project(attrs(QTY));
+        Key actual = r.getKey();
         //Keys expected = keys(key(QTY));
         // assertEquals(expected, actual);
     }
@@ -161,7 +138,7 @@ public class KeyTest {
         // test Ps intersect Kx = Ps
         // the new key must be the intersect of the key and the projected attributes
         Relation r = shipments();
-        // r.setKeys(key(SID, PID));
+        r.setKey(key(SID, PID));
         r.project(attrs(SID, QTY));
         //Keys actual = r.getKeys();
         // Keys expected = keys(key(SID));
@@ -183,25 +160,56 @@ public class KeyTest {
 
     @Test
     public void testRenameOperatorWithKey1(){
+
         // rename the entire key
         // k1 rename
-        Relation r = shipments();
-        //r.setKeys(key(SID, PID));
-        //r.rename(renaming(attr(SID, attr("RS"), PID, attr("RP"))));
-        // Keys actual = r.getKeys();
-        //Keys expected = keys(key(attr("RS"), attr("RP")));
-        //assertEquals(expected, actual);
+
+        Relation r= relation(
+                heading(SID, String.class, PID, String.class, QTY, Integer.class),
+                key(SID, PID),
+                tuple(SID, "S1", PID, "P1", QTY, 300),
+                tuple(SID, "S1", PID, "P2", QTY, 200),
+                tuple(SID, "S1", PID, "P3", QTY, 400),
+                tuple(SID, "S1", PID, "P4", QTY, 200),
+                tuple(SID, "S1", PID, "P5", QTY, 100),
+                tuple(SID, "S1", PID, "P6", QTY, 100),
+                tuple(SID, "S2", PID, "P1", QTY, 300),
+                tuple(SID, "S2", PID, "P2", QTY, 400),
+                tuple(SID, "S3", PID, "P2", QTY, 200),
+                tuple(SID, "S4", PID, "P2", QTY, 200),
+                tuple(SID, "S4", PID, "P4", QTY, 300),
+                tuple(SID, "S4", PID, "P5", QTY, 400)
+                );
+        r.rename(renaming(SID, attr("RS"), PID, attr("RP")));
+        Key actual = r.getKey();
+        Key expected = key(attr("RS"), attr("RP"));
+        assertEquals(expected, actual);
     }
 
     @Test
     public void testRenameOperatorWithKey2(){
         // rename some part of the key
         // k1 rename
-        Relation r = shipments();
-        //r.setKeys(key(SID, PID));
-        // r.rename(renaming(attr(SID, attr("RS"), QTY, attr("RQ"))));
-        // Keys actual = r.getKeys();
-        // Keys expected = keys(key(attr("RS"), PID));
+
+        Relation r= relation(
+                heading(SID, String.class, PID, String.class, QTY, Integer.class),
+                key(SID, PID),
+                tuple(SID, "S1", PID, "P1", QTY, 300),
+                tuple(SID, "S1", PID, "P2", QTY, 200),
+                tuple(SID, "S1", PID, "P3", QTY, 400),
+                tuple(SID, "S1", PID, "P4", QTY, 200),
+                tuple(SID, "S1", PID, "P5", QTY, 100),
+                tuple(SID, "S1", PID, "P6", QTY, 100),
+                tuple(SID, "S2", PID, "P1", QTY, 300),
+                tuple(SID, "S2", PID, "P2", QTY, 400),
+                tuple(SID, "S3", PID, "P2", QTY, 200),
+                tuple(SID, "S4", PID, "P2", QTY, 200),
+                tuple(SID, "S4", PID, "P4", QTY, 300),
+                tuple(SID, "S4", PID, "P5", QTY, 400)
+                );
+        // r.rename(renaming(SID, attr("RS"), QTY, attr("RQ")));
+        // Key actual = r.getKey();
+        // Key expected = key(attr("RS"), PID);
         // assertEquals(expected, actual);
     }
 

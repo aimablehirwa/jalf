@@ -85,8 +85,8 @@ public class DSL {
 
     // Key
 
-    public static Key key(AttrList attrkey) {
-        return Key.primary(attrkey);
+    public static Key key(AttrName... attrkey) {
+        return Key.primary(attrs(attrkey));
     }
 
     // Tuple
@@ -106,6 +106,10 @@ public class DSL {
 
     public static Relation relation(Heading heading, Tuple... tuples) {
         return relation(RelationType.dress(heading), tuples);
+    }
+
+    public static Relation relation(Heading heading,Key key, Tuple... tuples) {
+        return relation(RelationType.dress(heading),key, tuples);
     }
 
     public static Relation relation(Tuple... tuples) {
