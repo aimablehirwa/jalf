@@ -21,6 +21,27 @@ import jalf.Relation;
 import jalf.Renaming;
 
 public class KeyTest {
+    @Test
+    public void testHashCode() {
+        Key k1 = key(SID, PID);
+        Key k2 = key(SID, PID);
+        Key k3 = key(PID, SID);
+        Key k4 = key(PID, QTY);
+        assertEquals(k1.hashCode(), k2.hashCode());
+        assertEquals(k1.hashCode(), k3.hashCode());
+        assertNotEquals(k1.hashCode(), k4.hashCode());
+    }
+
+    @Test
+    public void testEquals() {
+        Key k1 = key(SID, PID);
+        Key k2 = key(PID, SID);
+        Key k3 = key(PID, QTY);
+        assertEquals(k1, k1);
+        assertEquals(k1, k2);
+
+        assertNotEquals(k1, k3);
+    }
 
     // test related to key constraints
 
