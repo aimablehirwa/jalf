@@ -6,6 +6,7 @@ import static jalf.DSL.eq;
 import static jalf.DSL.heading;
 import static jalf.DSL.key;
 import static jalf.DSL.relation;
+import static jalf.DSL.rename;
 import static jalf.DSL.renaming;
 import static jalf.DSL.tuple;
 import static jalf.fixtures.SuppliersAndParts.PID;
@@ -107,37 +108,32 @@ public class KeyTest {
 
     @Test
     public void testRenameKey1(){
-        // Key k1 = key(SID,PID);
+        Key k1 = key(SID,PID);
         Renaming rn = renaming(SID, attr("RS"), PID, attr("RP"));
-
-        //Key actual = k1.rename(rn);
-        // Key expected = key(attr("RS"), attr("RP"));
-
-        // assertEquals(expected, actual);
+        Key actual = k1.rename(rn);
+        Key expected = key(attr("RS"), attr("RP"));
+        assertEquals(expected, actual);
     }
 
     @Test
     public void testRenameKey2(){
-        // Key k1 = key(SID,PID);
-        // Renaming rn = renaming(SID, attr("RS"), QTY, attr("RQ"));
-
-        // Key actual = k1.rename(rn);
-        // Key expected = key(attr("RS"), PID);
-
-        //assertEquals(expected, actual);
+        Key k1 = key(SID,PID);
+        Renaming rn = renaming(SID, attr("RS"), QTY, attr("RQ"));
+        Key actual = k1.rename(rn);
+        Key expected = key(attr("RS"), PID);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void testRenameKey3(){
         // test renaming if there is no intersection
         // between the key and the renaming attributes
-        // Key k1 = key(SID,PID);
-        // Renaming rn = renaming(SID, attr("RS"), QTY, attr("RQ"));
+        Key k1 = key(PID);
+        Renaming rn = renaming(SID, attr("RS"), QTY, attr("RQ"));
+        Key actual = k1.rename(rn);
+        Key expected = key(PID);
 
-        //Key actual = k1.rename(rn);
-        //Key expected = key(attr("RS"), PID);
-
-        // assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     // test related to each operator
@@ -201,10 +197,11 @@ public class KeyTest {
                 tuple(SID, "S4", PID, "P4", QTY, 300),
                 tuple(SID, "S4", PID, "P5", QTY, 400)
                 );
-        r.rename(renaming(SID, attr("RS"), PID, attr("RP")));
-        Key actual = r.getKey();
+        Relation actual =rename(r,renaming(SID, attr("RS"), PID, attr("RP")));
+        Key k1 = actual.getKey();
+        System.out.println(k1.getAttrsKey());
         Key expected = key(attr("RS"), attr("RP"));
-        assertEquals(expected, actual);
+        assertEquals(expected, k1);
     }
 
     @Test

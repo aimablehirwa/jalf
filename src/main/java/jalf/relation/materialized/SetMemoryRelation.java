@@ -31,7 +31,6 @@ public class SetMemoryRelation extends MemoryRelation {
 
     private Collection<Tuple> tuples;
 
-    private Key key;
 
 
     //no key préciser tout les attributs deviennent la clef  de la relation
@@ -39,26 +38,17 @@ public class SetMemoryRelation extends MemoryRelation {
         this.type = type;
         this.tuples = tuples;
         Key  attrheading =new Key(this.type.getHeading().toAttrList());
-        this.key= attrheading;
+        this.setKey(attrheading);
     }
 
     //ici on précise la clef
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples,Key key) {
         this.type = type;
         this.tuples = tuples;
-        this.key=CheckKey(key);
+        this.setKey(CheckKey(key));
 
     }
-    //deux vérifications les attribut et project
-    // si la clef n'est pas correct on désigne tous les atribut comme clef
-    public Key CheckKey(Key key){
-        if (key.Check(this,key))
-            return key;
-        else{
-            Key attrheading =new Key(this.type.getHeading().toAttrList());
-            return attrheading;
-        }
-    }
+
 
 
     public SetMemoryRelation(RelationType type, Tuple[] tuples) {
@@ -113,16 +103,8 @@ public class SetMemoryRelation extends MemoryRelation {
         return type;
     }
 
-    @Override
-    public Key getKey() {
-        return this.key;
-    }
 
-    @Override
-    public void setKey(Key key) {
-        Key newkey= this.CheckKey(key);
-        this.key=newkey;
-    }
+
 
 
     @Override

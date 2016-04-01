@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import jalf.AttrList;
-import jalf.AttrName;
 import jalf.Relation;
 import jalf.Renaming;
 import jalf.Tuple;
@@ -55,7 +54,7 @@ public class Key  implements constraint{
     }
 
     public Key rename(Renaming renaming) {
-        AttrList newkey=AttrList.attrs(AttrName.attr("rid"));
+        AttrList newkey= this.attrsKey.rename(renaming);
         return new Key(newkey);
     }
 

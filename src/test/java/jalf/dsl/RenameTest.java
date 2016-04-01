@@ -1,27 +1,37 @@
 package jalf.dsl;
 
+import static jalf.DSL.attr;
+import static jalf.DSL.relation;
+import static jalf.DSL.rename;
+import static jalf.DSL.renaming;
+import static jalf.DSL.tuple;
+import static jalf.fixtures.SuppliersAndParts.CITY;
+import static jalf.fixtures.SuppliersAndParts.NAME;
+import static jalf.fixtures.SuppliersAndParts.SID;
+import static jalf.fixtures.SuppliersAndParts.STATUS;
+import static jalf.fixtures.SuppliersAndParts.SUPPLIER_ID;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import jalf.AttrName;
 import jalf.Relation;
 import jalf.Renaming;
 
-import org.junit.Test;
-
-import static jalf.DSL.*;
-import static jalf.fixtures.SuppliersAndParts.*;
-import static org.junit.Assert.assertEquals;
-
 public class RenameTest {
 
     Relation SOURCE = relation(
-        tuple(SID, "S1", NAME, "Smith", STATUS, 20, CITY, "London")
-    );
+            tuple(SID, "S1", NAME, "Smith", STATUS, 20, CITY, "London")
+            );
 
     @Test
     public void testItSupportsAnExplicitRenaming() {
         Relation expected = relation(
-            tuple(SUPPLIER_ID, "S1", NAME, "Smith", STATUS, 20, CITY, "London")
-        );
+                tuple(SUPPLIER_ID, "S1", NAME, "Smith", STATUS, 20, CITY, "London")
+                );
         Relation actual = rename(SOURCE, renaming(SID, SUPPLIER_ID));
+        System.out.println("hhh"+actual.getType().toAttrList());
+        System.out.println("kkkk"+actual.getKey().getAttrsKey());
         assertEquals(expected, actual);
     }
 
@@ -32,8 +42,8 @@ public class RenameTest {
         AttrName S_STATUS = attr("s_status");
         AttrName S_CITY = attr("s_city");
         Relation expected = relation(
-            tuple(S_SID, "S1", S_NAME, "Smith", S_STATUS, 20, S_CITY, "London")
-        );
+                tuple(S_SID, "S1", S_NAME, "Smith", S_STATUS, 20, S_CITY, "London")
+                );
         Relation actual = rename(SOURCE, Renaming.prefix("s_"));
         assertEquals(expected, actual);
     }
@@ -45,8 +55,8 @@ public class RenameTest {
         AttrName STATUS_S = attr("status_s");
         AttrName CITY_S = attr("city_s");
         Relation expected = relation(
-            tuple(SID_S, "S1", NAME_S, "Smith", STATUS_S, 20, CITY_S, "London")
-        );
+                tuple(SID_S, "S1", NAME_S, "Smith", STATUS_S, 20, CITY_S, "London")
+                );
         Relation actual = rename(SOURCE, Renaming.suffix("_s"));
         assertEquals(expected, actual);
     }

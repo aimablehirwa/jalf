@@ -69,7 +69,7 @@ public class Project extends UnaryOperator {
 
     @Override
     public void setKey(Key key) {
-        // TODO Auto-generated method stub
+        operand.setKey(key);
 
     }
 

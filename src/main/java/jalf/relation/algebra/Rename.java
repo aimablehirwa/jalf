@@ -30,6 +30,7 @@ public class Rename extends UnaryOperator {
         this.operand = operand;
         this.renaming = renaming;
         this.type = typeCheck();
+
     }
 
     @Override
@@ -64,13 +65,16 @@ public class Rename extends UnaryOperator {
 
     @Override
     public Key getKey() {
+        System.out.println("getrename");
         return this.operand.getKey();
     }
 
     @Override
     public void setKey(Key key) {
-        // TODO Auto-generated method stub
+
+        this.operand.setKey(key);
 
     }
+
 
 }

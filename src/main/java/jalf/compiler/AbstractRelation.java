@@ -9,6 +9,7 @@ import jalf.Relation;
 import jalf.Renaming;
 import jalf.Selection;
 import jalf.Tuple;
+import jalf.constraint.Key;
 import jalf.relation.algebra.Intersect;
 import jalf.relation.algebra.Join;
 import jalf.relation.algebra.Minus;
@@ -30,6 +31,8 @@ import jalf.type.TupleType;
 public abstract class AbstractRelation implements Relation {
 
     private TupleType tupleType;
+    private Key key;
+
 
     @Override
     public TupleType getTupleType() {
@@ -91,10 +94,32 @@ public abstract class AbstractRelation implements Relation {
         return stream().count();
     }
 
+
     ///
 
     private Cog compile() {
         return accept(new Compiler());
+    }
+    @Override
+    public Key getKey() {
+        return this.key;
+    }
+
+    @Override
+    public void setKey(Key key) {
+        Key newkey= this.CheckKey(key);
+        this.key=newkey;
+        this.key=key;
+    }
+    //deux vérifications les attribut et project
+    // si la clef n'est pas correct on désigne tous les atribut comme clef
+    public Key CheckKey(Key key){
+        if (key.Check(this,key))
+            return key;
+        else{
+            Key attrheading =new Key(this.tupleType.getHeading().toAttrList());
+            return attrheading;
+        }
     }
 
     ///

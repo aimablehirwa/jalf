@@ -93,11 +93,18 @@ public abstract class Cog {
     public Cog rename(Rename rename) {
         Renaming renaming = rename.getRenaming();
         TupleType tt = rename.getTupleType();
+        Key oldkey=rename.getKey();
+        //System.out.println(oldkey.getAttrsKey());
+        Key newooo=oldkey.rename(renaming);
+
 
         // stream compilation: simple renaming
         Supplier<Stream<Tuple>> supplier = () -> this.stream()
                 .map(t -> t.rename(renaming, tt));
 
+        rename.setKey(newooo);
+        System.out.println(rename.getKey().getAttrsKey());
+        System.out.println(rename.getType().toAttrList());
         return new BaseCog(rename, supplier);
     }
 
