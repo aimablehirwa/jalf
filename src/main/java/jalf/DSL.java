@@ -1,11 +1,11 @@
 package jalf;
 
-import java.util.stream.Stream;
-
 import jalf.constraint.Key;
 import jalf.relation.materialized.SetMemoryRelation;
 import jalf.type.Heading;
 import jalf.type.RelationType;
+
+import java.util.stream.Stream;
 
 /**
  * @author amirm
@@ -100,16 +100,16 @@ public class DSL {
     public static Relation relation(RelationType type, Tuple... tuples) {
         return SetMemoryRelation.tuples(type, tuples);
     }
-    public static Relation relation(RelationType type,Key key, Tuple... tuples) {
-        return SetMemoryRelation.tuples(type,key, tuples);
+    public static Relation relation(RelationType type, Key key, Tuple... tuples) {
+        return SetMemoryRelation.tuples(type, key, tuples);
     }
 
     public static Relation relation(Heading heading, Tuple... tuples) {
         return relation(RelationType.dress(heading), tuples);
     }
 
-    public static Relation relation(Heading heading,Key key, Tuple... tuples) {
-        return relation(RelationType.dress(heading),key, tuples);
+    public static Relation relation(Heading heading, Key key, Tuple... tuples) {
+        return relation(RelationType.dress(heading), key, tuples);
     }
 
     public static Relation relation(Tuple... tuples) {
@@ -117,7 +117,7 @@ public class DSL {
     }
 
     public static Relation relation(Key key, Tuple... tuples ) {
-        return relation(RelationType.infer(Stream.of(tuples)),key, tuples);
+        return relation(RelationType.infer(Stream.of(tuples)), key, tuples);
     }
 
     // Relational algebra

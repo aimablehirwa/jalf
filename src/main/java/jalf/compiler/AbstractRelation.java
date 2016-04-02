@@ -1,8 +1,5 @@
 package jalf.compiler;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import jalf.AttrList;
 import jalf.Predicate;
 import jalf.Relation;
@@ -19,6 +16,9 @@ import jalf.relation.algebra.Restrict;
 import jalf.relation.algebra.Select;
 import jalf.relation.algebra.Union;
 import jalf.type.TupleType;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Parent (abstract) class of all relation implementations.
@@ -107,17 +107,17 @@ public abstract class AbstractRelation implements Relation {
 
     @Override
     public void setKey(Key key) {
-        Key newkey= this.CheckKey(key);
-        this.key=newkey;
-        this.key=key;
+        Key newkey = this.checkKeyValidity(key);
+        this.key = newkey;
     }
+
     //deux vérifications les attribut et project
     // si la clef n'est pas correct on désigne tous les atribut comme clef
-    public Key CheckKey(Key key){
-        if (key.Check(this,key))
+    public Key checkKeyValidity(Key key){
+        if (key.checkKeyUniqueness(this)){
             return key;
-        else{
-            Key attrheading =new Key(this.tupleType.getHeading().toAttrList());
+        }else{
+            Key attrheading = new Key(this.tupleType.getHeading().toAttrList());
             return attrheading;
         }
     }

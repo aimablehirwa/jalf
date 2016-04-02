@@ -2,15 +2,6 @@ package jalf.compiler;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import jalf.AttrList;
 import jalf.Predicate;
 import jalf.Relation;
@@ -27,6 +18,14 @@ import jalf.relation.algebra.Restrict;
 import jalf.relation.algebra.Select;
 import jalf.relation.algebra.Union;
 import jalf.type.TupleType;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Compiled-version of a relation(al) expression, ready to be consumed.
@@ -72,10 +71,11 @@ public abstract class Cog {
     public Cog project(Project projection) {
         AttrList on = projection.getAttributes();
         TupleType tt = projection.getTupleType();
-        Key key=projection.getKey();
+        Key key = projection.getOperand().getKey();
         Supplier<Stream<Tuple>> supplier;
         //avoid duplicate
-        if (key.getIntersectKeyAttr(on,key).equals(key.getAttrsKey())){
+        if (key.getAttrsKey().equals(on)){
+            //if (key.getIntersectKeyAttr(on,key).equals(key.getAttrsKey())){
             supplier = () -> this.stream()
                     .map(t -> t.project(on, tt));
         }
@@ -93,18 +93,18 @@ public abstract class Cog {
     public Cog rename(Rename rename) {
         Renaming renaming = rename.getRenaming();
         TupleType tt = rename.getTupleType();
-        Key oldkey=rename.getKey();
+        //Key oldkey=rename.getKey();
         //System.out.println(oldkey.getAttrsKey());
-        Key newooo=oldkey.rename(renaming);
+        //Key newooo=oldkey.rename(renaming);
+        //Key newkey = rename.getKey().rename(renaming);
 
 
         // stream compilation: simple renaming
         Supplier<Stream<Tuple>> supplier = () -> this.stream()
                 .map(t -> t.rename(renaming, tt));
 
-        rename.setKey(newooo);
-        System.out.println(rename.getKey().getAttrsKey());
-        System.out.println(rename.getType().toAttrList());
+        //rename.setKey(newooo);
+        //rename.setKey(newkey);
         return new BaseCog(rename, supplier);
     }
 

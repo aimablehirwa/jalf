@@ -1,13 +1,13 @@
 package jalf.relation.algebra;
 
-import java.util.Arrays;
-import java.util.List;
-
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
 import jalf.constraint.Key;
 import jalf.type.RelationType;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Intersect extends BinaryOperator{
 
@@ -17,16 +17,20 @@ public class Intersect extends BinaryOperator{
 
     private final RelationType type;
 
+    private final Key key;
+
     public Intersect(RelationType type, Relation left, Relation right) {
         this.left = left;
         this.right = right;
         this.type = type;
+        this.key = keyCheck();
     }
 
     public Intersect(Relation left, Relation right){
         this.left = left;
         this.right = right;
         this.type = typeCheck();
+        this.key = keyCheck();
     }
 
     @Override
@@ -70,14 +74,19 @@ public class Intersect extends BinaryOperator{
 
     @Override
     public Key getKey() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.key;
     }
 
     @Override
     public void setKey(Key key) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    protected Key keyCheck() {
+        AttrList l = left.getKey().union(right.getKey());
+        return Key.primary(l);
     }
 
 }

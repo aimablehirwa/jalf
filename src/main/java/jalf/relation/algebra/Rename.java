@@ -1,13 +1,13 @@
 package jalf.relation.algebra;
 
-import java.util.Arrays;
-import java.util.List;
-
 import jalf.Relation;
 import jalf.Renaming;
 import jalf.Visitor;
 import jalf.constraint.Key;
 import jalf.type.RelationType;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Relational renaming.
@@ -20,17 +20,20 @@ public class Rename extends UnaryOperator {
 
     private RelationType type;
 
+    private Key key;
+
     public Rename(Relation operand, Renaming renaming, RelationType type) {
         this.operand = operand;
         this.renaming = renaming;
         this.type = type;
+        this.key = this.keyCheck();
     }
 
     public Rename(Relation operand, Renaming renaming) {
         this.operand = operand;
         this.renaming = renaming;
         this.type = typeCheck();
-
+        this.key = this.keyCheck();
     }
 
     @Override
@@ -65,15 +68,17 @@ public class Rename extends UnaryOperator {
 
     @Override
     public Key getKey() {
-        System.out.println("getrename");
         return this.operand.getKey();
     }
 
     @Override
     public void setKey(Key key) {
+        //this.operand.setKey(key);
+    }
 
-        this.operand.setKey(key);
-
+    @Override
+    protected Key keyCheck() {
+        return operand.getKey().rename(renaming);
     }
 
 

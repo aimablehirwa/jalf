@@ -1,12 +1,12 @@
 package jalf;
 
-import java.util.stream.Stream;
-
 import jalf.constraint.Key;
 import jalf.relation.algebra.Dee;
 import jalf.relation.algebra.Dum;
 import jalf.type.RelationType;
 import jalf.type.TupleType;
+
+import java.util.stream.Stream;
 
 /**
  * A relation, aka a typed set of typed tuples/facts plus algebra.
@@ -47,9 +47,7 @@ public interface Relation {
      */
     Key getKey();
 
-
-
-
+    void setKey(Key key);
 
     /**
      * Returns the type of the tuples belonging to this relation.
@@ -140,10 +138,5 @@ public interface Relation {
      * @return the cardinality of the relation, i.e. the number of tuples.
      */
     long cardinality();
-
-
-    void setKey(Key key);
-
-
 
 }
