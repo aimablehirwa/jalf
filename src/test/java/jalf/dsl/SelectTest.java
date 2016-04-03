@@ -1,12 +1,18 @@
 package jalf.dsl;
 
-import jalf.*;
+import static jalf.DSL.relation;
+import static jalf.DSL.select;
+import static jalf.DSL.tuple;
+import static jalf.fixtures.SuppliersAndParts.NAME;
+import static jalf.fixtures.SuppliersAndParts.suppliers;
+import static org.junit.Assert.assertEquals;
+import jalf.AttrName;
+import jalf.Relation;
+import jalf.Selection;
+import jalf.SelectionMember;
+import jalf.Type;
 
 import org.junit.Test;
-
-import static jalf.DSL.*;
-import static jalf.fixtures.SuppliersAndParts.*;
-import static org.junit.Assert.*;
 
 public class SelectTest {
 
@@ -18,7 +24,7 @@ public class SelectTest {
                 tuple(LETTER, "s"),
                 tuple(LETTER, "e"),
                 tuple(LETTER, "k")
-        );
+                );
         SelectionMember letterMember = SelectionMember.fn(
                 Type.scalarType(String.class),
                 t -> {

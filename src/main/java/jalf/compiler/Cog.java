@@ -72,10 +72,10 @@ public abstract class Cog {
     public Cog project(Project projection) {
         AttrList on = projection.getAttributes();
         TupleType tt = projection.getTupleType();
-        Key key=projection.getKey();
+        Key key = projection.getOperand().getKey();
         Supplier<Stream<Tuple>> supplier;
         //avoid duplicate
-        if (key.getIntersectKeyAttr(on,key).equals(key.getAttrsKey())){
+        if (key.getIntersectKeyAttr(on).equals(key.getAttrsKey())){
             supplier = () -> this.stream()
                     .map(t -> t.project(on, tt));
         }
@@ -93,18 +93,20 @@ public abstract class Cog {
     public Cog rename(Rename rename) {
         Renaming renaming = rename.getRenaming();
         TupleType tt = rename.getTupleType();
+
         Key oldkey=rename.getKey();
-        //System.out.println(oldkey.getAttrsKey());
-        Key newooo=oldkey.rename(renaming);
-        rename.setKey(newooo);
-        // rename.getRenaming().
+        Key newkey=oldkey.rename(renaming);
+        rename.setKey(newkey);
+
         // stream compilation: simple renaming
         Supplier<Stream<Tuple>> supplier = () -> this.stream()
                 .map(t -> t.rename(renaming, tt));
 
 
+
         System.out.println(rename.getKey().getAttrsKey());
         System.out.println(rename.getType().toAttrList());
+
         return new BaseCog(rename, supplier);
     }
 

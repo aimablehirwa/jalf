@@ -37,19 +37,16 @@ public class SetMemoryRelation extends MemoryRelation {
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples) {
         this.type = type;
         this.tuples = tuples;
-        Key  attrheading =new Key(this.type.getHeading().toAttrList());
+        Key  attrheading = new Key(this.type.getHeading().toAttrList());
         this.setKey(attrheading);
     }
 
     //ici on précise la clef
-    public SetMemoryRelation(RelationType type, Set<Tuple> tuples,Key key) {
+    public SetMemoryRelation(RelationType type, Set<Tuple> tuples, Key key) {
         this.type = type;
         this.tuples = tuples;
-        this.setKey(CheckKey(key));
-
+        this.setKey(checkKeyValidity(key));
     }
-
-
 
     public SetMemoryRelation(RelationType type, Tuple[] tuples) {
         this(type, setOf(tuples));
@@ -159,12 +156,5 @@ public class SetMemoryRelation extends MemoryRelation {
                 Collector.Characteristics.CONCURRENT,
                 Collector.Characteristics.UNORDERED);
     }
-
-    @Override
-    public Key getKey() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 
 }

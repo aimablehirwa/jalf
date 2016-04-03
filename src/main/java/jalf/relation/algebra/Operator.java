@@ -2,6 +2,7 @@ package jalf.relation.algebra;
 
 import jalf.Relation;
 import jalf.compiler.AbstractRelation;
+import jalf.constraint.Key;
 import jalf.relation.materialized.MemoryRelation;
 import jalf.type.RelationType;
 
@@ -19,13 +20,16 @@ public abstract class Operator extends AbstractRelation {
 
     public abstract List<Object> getArguments();
 
+    @Override
     public boolean equals(Relation other) {
         if (other instanceof MemoryRelation)
             return other.equals(this);
         else
             return stream()
-                .collect(MemoryRelation.collector(getType()))
-                .equals(other);
+                    .collect(MemoryRelation.collector(getType()))
+                    .equals(other);
     }
+
+    protected abstract Key keyCheck();
 
 }

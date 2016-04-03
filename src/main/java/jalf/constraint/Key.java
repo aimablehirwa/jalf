@@ -8,6 +8,7 @@ import jalf.Relation;
 import jalf.Renaming;
 import jalf.Tuple;
 import jalf.type.TupleType;
+
 public class Key  implements Constraint{
     private AttrList attrsKey;
 
@@ -20,35 +21,42 @@ public class Key  implements Constraint{
         return new Key(attrsKey);
     }
 
-    @Override
-    public boolean Check(Relation r, Key key) {
+    /*
+     * check if each tuples containt unique key
+     *
+     * (non-Javadoc)
+     * @see jalf.constraint.Constraint#checkKeyUniqueness(jalf.Relation)
+     */
+
+    public boolean checkKeyUniqueness(Relation r) {
         //vérifier si les clef appartienne bien au atributs de la relation
         AttrList attrsrelation= r.getType().getHeading().toAttrList();
-        AttrList intersect= getIntersectKeyAttr(attrsrelation,key);
-        if (intersect.equals(key.getAttrsKey())){
+        AttrList intersect= getIntersectKeyAttr(attrsrelation);
+        if (intersect.equals(this.attrsKey)){
             // deuxieme vérification sur la cardinality apres projection
             // sur la clef
-            long lproject= getCardinalityKeyProject(r,key.getAttrsKey());
-            return(lproject ==r.cardinality());
+            long lproject= getCardinalityKeyProject(r);
+            return(lproject == r.cardinality());
         }
         else{
             return false;
         }
     }
 
-    public AttrList getIntersectKeyAttr( AttrList attrsrelation, Key key) {
-        AttrList attrskey= key.getAttrsKey();
-        return  attrsrelation.intersect(attrskey);
+    public AttrList getIntersectKeyAttr( AttrList attrsrelation) {
+        return  attrsrelation.intersect( this.attrsKey);
     }
-    private long getCardinalityKeyProject( Relation r , AttrList intersect) {
+
+    private long getCardinalityKeyProject(Relation r) {
         TupleType tt = r.getTupleType();
         Supplier<Stream<Tuple>> supplier;
         supplier = () -> r.stream()
-                .map(t -> t.project(intersect, tt))
+                .map(t -> t.project(this.attrsKey, tt))
                 .distinct();
         return supplier.get().count();
     }
 
+    @Override
     public AttrList getAttrsKey() {
         return attrsKey;
     }
@@ -58,11 +66,18 @@ public class Key  implements Constraint{
         return new Key(newkey);
     }
 
+    public AttrList insersect(AttrList attributes) {
+        return this.attrsKey.intersect(attributes);
+    }
+
+    public AttrList union(Key key) {
+        return this.attrsKey.union(key.attrsKey);
+    }
+
     @Override
     public int hashCode() {
         return attrsKey.hashCode();
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -72,6 +87,12 @@ public class Key  implements Constraint{
             return false;
         Key otherkey = (Key) o;
         return (this.attrsKey.equals(otherkey.attrsKey));
+    }
+
+    @Override
+    public boolean Check(Relation r) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

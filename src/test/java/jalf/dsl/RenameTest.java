@@ -11,12 +11,11 @@ import static jalf.fixtures.SuppliersAndParts.SID;
 import static jalf.fixtures.SuppliersAndParts.STATUS;
 import static jalf.fixtures.SuppliersAndParts.SUPPLIER_ID;
 import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import jalf.AttrName;
 import jalf.Relation;
 import jalf.Renaming;
+
+import org.junit.Test;
 
 public class RenameTest {
 
@@ -30,8 +29,8 @@ public class RenameTest {
                 tuple(SUPPLIER_ID, "S1", NAME, "Smith", STATUS, 20, CITY, "London")
                 );
         Relation actual = rename(SOURCE, renaming(SID, SUPPLIER_ID));
-        System.out.println("hhh"+actual.getType().toAttrList());
-        System.out.println("kkkk"+actual.getKey().getAttrsKey());
+        //System.out.println("hhh"+actual.getType().toAttrList());
+        //System.out.println("kkkk"+actual.getKey().getAttrsKey());
         assertEquals(expected, actual);
     }
 

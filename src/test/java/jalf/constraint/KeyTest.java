@@ -3,10 +3,8 @@ package jalf.constraint;
 import static jalf.DSL.attr;
 import static jalf.DSL.attrs;
 import static jalf.DSL.eq;
-import static jalf.DSL.heading;
 import static jalf.DSL.key;
 import static jalf.DSL.relation;
-import static jalf.DSL.rename;
 import static jalf.DSL.renaming;
 import static jalf.DSL.tuple;
 import static jalf.fixtures.SuppliersAndParts.PID;
@@ -14,14 +12,20 @@ import static jalf.fixtures.SuppliersAndParts.QTY;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static jalf.fixtures.SuppliersAndParts.shipments;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import jalf.AttrList;
+import jalf.AttrName;
 import jalf.Relation;
 import jalf.Renaming;
+import jalf.type.Heading;
 
 public class KeyTest {
+
     @Test
     public void testHashCode() {
         Key k1 = key(SID, PID);
@@ -40,15 +44,12 @@ public class KeyTest {
         Key k3 = key(PID, QTY);
         assertEquals(k1, k1);
         assertEquals(k1, k2);
-
         assertNotEquals(k1, k3);
     }
 
-    // test related to key constraints
-
     @Test
-    public void testCheckUniquenessTrue(){
-        // test if there is only one tuple that have the key
+    public void testCheckIfItisCandidateKey(){
+        // test check if the key can be candidate
         Relation r = shipments();
         r.setKey(key(SID, PID));
         Key k1 = key(SID, PID);
@@ -56,58 +57,38 @@ public class KeyTest {
     }
 
     @Test
-    public void testCheckUniquenessFalse(){
+    public void testHeaderIsKey(){
+        // the key is the header if the key entered don't support the uniqueness constraint
         Relation r = shipments();
-        // la clef n'est pas bonne
         r.setKey(key(SID));
-        // la clef est donc tous les attributs
         Key k1 = key(SID,PID,QTY);
         assertEquals(r.getKey(),k1);
     }
 
-    // test related to key itself
-
     @Test
-    public void testIsASubKeyTrue1(){
+    public void testHeaderIsKeyIfKeyNotSpecified(){
+        // the key is the header if no key specified
         Relation r = shipments();
-        r.setKey(key(SID, PID));
-        Key k1 = key(SID, PID);
+        Key k1 = key(SID,PID,QTY);
         assertEquals(r.getKey(),k1);
-        // assertTrue(k1.checkUniqueness());
-        //assertTrue(k1.isSubKeys(r));
     }
 
     @Test
-    public void testIsASubKeyTrue2(){
+    public void testCheckKeyUniquenessTrue(){
         Relation r = shipments();
-        // r.setKeys(key(SID, PID));
-        //Key k1 = key(SID);
-
-        //assertTrue(k1.checkUniqueness(r));
-        //assertTrue(k1.isSubKeys(r));
+        Key k = key(SID, PID);
+        assertTrue(k.checkKeyUniqueness(r));
     }
 
     @Test
-    public void testIsASubKeyTrue3(){
+    public void testCheckKeyUniquenessFalse(){
         Relation r = shipments();
-        // Key k1 = key(SID, PID, QTY);
-
-        //assertTrue(k1.checkUniqueness(r));
-        // assertTrue(k1.isSubKeys(r));
+        Key k = key(SID);
+        assertFalse(k.checkKeyUniqueness(r));
     }
 
     @Test
-    public void testIsASubKeyFalse(){
-        Relation r = shipments();
-        r.setKey(key(SID, PID));
-        Key k1 = key(SID, attr("cid"));
-
-        assertNotEquals(r.getKey(),k1);
-    }
-
-
-    @Test
-    public void testRenameKey1(){
+    public void testRenameTheKey(){
         Key k1 = key(SID,PID);
         Renaming rn = renaming(SID, attr("RS"), PID, attr("RP"));
         Key actual = k1.rename(rn);
@@ -116,7 +97,7 @@ public class KeyTest {
     }
 
     @Test
-    public void testRenameKey2(){
+    public void testRenameAnAttrOfKey(){
         Key k1 = key(SID,PID);
         Renaming rn = renaming(SID, attr("RS"), QTY, attr("RQ"));
         Key actual = k1.rename(rn);
@@ -125,110 +106,122 @@ public class KeyTest {
     }
 
     @Test
-    public void testRenameKey3(){
+    public void testRenameNotTheKey(){
         // test renaming if there is no intersection
         // between the key and the renaming attributes
         Key k1 = key(PID);
         Renaming rn = renaming(SID, attr("RS"), QTY, attr("RQ"));
         Key actual = k1.rename(rn);
         Key expected = key(PID);
-
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testKeyRelationEquality(){
+        Relation r1 = shipments();
+        Relation r2 = shipments();
+        assertEquals(r1.getKey(), r2.getKey());
+    }
+
+    @Test
+    public void testKeyRelationEquality1(){
+        AttrName LETTER = AttrName.attr("letter");
+        Relation r1 = relation(
+                tuple(LETTER, "h"),
+                tuple(LETTER, "s"),
+                tuple(LETTER, "e"),
+                tuple(LETTER, "k")
+                );
+        Relation r2 = relation(
+                tuple(LETTER, "h"),
+                tuple(LETTER, "s"),
+                tuple(LETTER, "e"),
+                tuple(LETTER, "k")
+                );
+        assertEquals(r1.getKey(), r2.getKey());
     }
 
     // test related to each operator
 
     @Test
     public void testProjectOperatorWithKey1(){
-        // test Ps intersect Kx = null
-        //on ne sert pas de la clef
+        // test Ps intersect Kx = null : Kn = Ps
         Relation r = shipments();
         r.setKey(key(SID, PID));
-        r.project(attrs(QTY));
-        Key actual = r.getKey();
-        //Keys expected = keys(key(QTY));
-        // assertEquals(expected, actual);
+        Relation p = r.project(attrs(QTY));
+        Key actual = p.getKey();
+        Key expected = key(QTY);
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
 
     @Test
     public void testProjectOperatorWithKey2(){
-        // test Ps intersect Kx = Ps
-        // the new key must be the intersect of the key and the projected attributes
+        // test Ps intersect Kx = Psx : Kn = on
+        // the new key must be the projected attributes
         Relation r = shipments();
         r.setKey(key(SID, PID));
-        r.project(attrs(SID, QTY));
-        //Keys actual = r.getKeys();
-        // Keys expected = keys(key(SID));
-        //assertEquals(expected, actual);
+        Relation p = r.project(attrs(SID, QTY));
+        Key actual = p.getKey();
+        Key expected = key(SID, QTY);
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
 
     @Test
     public void testProjectOperatorWithKey3(){
-        // test Ps intersect Ks = Ks
+        // test Ps intersect Ks = Ks : Kn = Ks
         // the key and the projected attributes are the same,
         // so the key of the projection is the key of r
         Relation r = shipments();
-        //r.setKeys(key(SID, PID));
-        // r.project(attrs(SID, PID));
-        //Keys actual = r.getKeys();
-        //Keys expected = keys(key(SID, PID));
-        // assertEquals(expected, actual);
+        r.setKey(key(SID, PID));
+        Relation p = r.project(attrs(SID, PID, QTY));
+        Key actual = p.getKey();
+        Key expected = key(SID, PID);
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
 
     @Test
-    public void testRenameOperatorWithKey1(){
-
-        // rename the entire key
-        // k1 rename
-
-        Relation r= relation(
-                heading(SID, String.class, PID, String.class, QTY, Integer.class),
-                key(SID, PID),
-                tuple(SID, "S1", PID, "P1", QTY, 300),
-                tuple(SID, "S1", PID, "P2", QTY, 200),
-                tuple(SID, "S1", PID, "P3", QTY, 400),
-                tuple(SID, "S1", PID, "P4", QTY, 200),
-                tuple(SID, "S1", PID, "P5", QTY, 100),
-                tuple(SID, "S1", PID, "P6", QTY, 100),
-                tuple(SID, "S2", PID, "P1", QTY, 300),
-                tuple(SID, "S2", PID, "P2", QTY, 400),
-                tuple(SID, "S3", PID, "P2", QTY, 200),
-                tuple(SID, "S4", PID, "P2", QTY, 200),
-                tuple(SID, "S4", PID, "P4", QTY, 300),
-                tuple(SID, "S4", PID, "P5", QTY, 400)
-                );
-        Relation actual =rename(r,renaming(SID, attr("RS"), PID, attr("RP")));
-        Key k1 = actual.getKey();
-        System.out.println(k1.getAttrsKey());
-        Key expected = key(attr("RS"), attr("RP"));
-        assertEquals(expected, k1);
+    public void testProjectOperatorWithKey4(){
+        // test Ps intersect Ks = Ps : Kn = Ps
+        // the key and the projected attributes are the same,
+        // so the key of the projection is the key of r
+        Relation r = shipments();
+        r.setKey(key(SID, PID));
+        Relation p = r.project(attrs(SID));
+        Key actual = p.getKey();
+        Key expected = key(SID);
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
 
     @Test
-    public void testRenameOperatorWithKey2(){
-        // rename some part of the key
-        // k1 rename
-
-        Relation r= relation(
-                heading(SID, String.class, PID, String.class, QTY, Integer.class),
-                key(SID, PID),
-                tuple(SID, "S1", PID, "P1", QTY, 300),
-                tuple(SID, "S1", PID, "P2", QTY, 200),
-                tuple(SID, "S1", PID, "P3", QTY, 400),
-                tuple(SID, "S1", PID, "P4", QTY, 200),
-                tuple(SID, "S1", PID, "P5", QTY, 100),
-                tuple(SID, "S1", PID, "P6", QTY, 100),
-                tuple(SID, "S2", PID, "P1", QTY, 300),
-                tuple(SID, "S2", PID, "P2", QTY, 400),
-                tuple(SID, "S3", PID, "P2", QTY, 200),
-                tuple(SID, "S4", PID, "P2", QTY, 200),
-                tuple(SID, "S4", PID, "P4", QTY, 300),
-                tuple(SID, "S4", PID, "P5", QTY, 400)
-                );
-        // r.rename(renaming(SID, attr("RS"), QTY, attr("RQ")));
-        // Key actual = r.getKey();
-        // Key expected = key(attr("RS"), PID);
-        // assertEquals(expected, actual);
+    public void testProjectOperatorWithKey4bis(){
+        // test Ps intersect Ks = Ps : Kn = Ps
+        // the key and the projected attributes are the same,
+        // so the key of the projection is the key of r
+        Relation r = shipments();
+        Relation p = r.project(attrs(SID));
+        Key actual = p.getKey();
+        Key expected = key(SID);
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
 
     @Test
@@ -236,10 +229,16 @@ public class KeyTest {
         // restrict does not have impact on the key
         Relation r = shipments();
         r.setKey(key(SID, PID));
-        r.restrict(eq(SID, "S1"));
-        Key actual = r.getKey();
+
+        Relation rs = r.restrict(eq(SID, "S1"));
+        Key actual = rs.getKey();
         Key expected = key(SID, PID);
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = rs.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
+
     }
 
     @Test
@@ -260,18 +259,22 @@ public class KeyTest {
                 tuple(attr("A"), "a2", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
-        // r1.setKeys(key(attr("A"), attr("C")));
-        // r2.setKeys(key(attr("A"), attr("B")));
+        r1.setKey(key(attr("A"), attr("C")));
+        r2.setKey(key(attr("A"), attr("B")));
         Relation r = r1.intersect(r2);
-        // Keys actual = r.getKeys();
-        // Keys expected = keys(key(attr("A"), attr("B"), attr("C")));
-        // assertEquals(expected, actual);
+        Key actual = r.getKey();
+        Key expected = key(attr("A"), attr("B"), attr("C"));
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = r.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
 
     @Test
     public void testMinusOperatorWithKey(){
         // minus with header compatible
-        // k2
+        // k1
         Relation r1 = relation(
                 tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
@@ -286,12 +289,16 @@ public class KeyTest {
                 tuple(attr("A"), "a2", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
-        // r1.setKeys(key(attr("A"), attr("C")));
-        //r2.setKeys(key(attr("A"), attr("B")));
-        // Relation r = r1.minus(r2);
-        // Keys actual = r.getKeys();
-        // Keys expected = keys(key(attr("A"), attr("C")));
-        // assertEquals(expected, actual);
+        r1.setKey(key(attr("A"), attr("C")));
+        r2.setKey(key(attr("A"), attr("B")));
+        Relation r = r1.minus(r2);
+        Key actual = r.getKey();
+        Key expected = key(attr("A"), attr("C"));
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = r.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
 
     @Test
@@ -312,12 +319,16 @@ public class KeyTest {
                 tuple(attr("A"), "a2", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
-        // r1.setKeys(key(attr("A"), attr("C")));
-        //r2.setKeys(key(attr("A"), attr("B")));
-        //Relation r = r1.union(r2);
-        //Keys actual = r.getKeys();
-        //Keys expected = keys(key(attr("A"), attr("B"), attr("C")));
-        // assertEquals(expected, actual);
+        r1.setKey(key(attr("A"), attr("C")));
+        r2.setKey(key(attr("A"), attr("B")));
+        Relation r = r1.union(r2);
+        Key actual = r.getKey();
+        Key expected = key(attr("A"), attr("B"), attr("C"));
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = r.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
 
     @Test
@@ -338,42 +349,16 @@ public class KeyTest {
                 tuple(attr("A"), "a2", attr("D"), "d1", attr("E"), "e1"),
                 tuple(attr("A"), "a3", attr("D"), "d1", attr("E"), "e2"));
 
-        //r1.setKeys(key(attr("A"), attr("C")));
-        //r2.setKeys(key(attr("D")));
-        // Relation r = r1.join(r2);
-        //Keys actual = r.getKeys();
-        // Keys expected = keys(key(attr("A"), attr("C"), attr("D")));
-        // assertEquals(expected, actual);
+        r1.setKey(key(attr("A"), attr("C")));
+        r2.setKey(key(attr("D")));
+        Relation r = r1.join(r2);
+        Key actual = r.getKey();
+        Key expected = key(attr("A"), attr("C"), attr("D"), attr("E"));
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = r.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
     }
-
-    @Test
-    public void testJoinOperatorWithKey2(){
-        // join with no joining attribute value
-        // the result key must be empty
-        Relation r1 = relation(
-                tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
-                tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
-                tuple(attr("A"), "a1", attr("B"), "b3", attr("C"), "c2"),
-                tuple(attr("A"), "a2", attr("B"), "b1", attr("C"), "c1"),
-                tuple(attr("A"), "a3", attr("B"), "b3", attr("C"), "c4"));
-
-        Relation r2 = relation(
-                tuple(attr("A"), "a4", attr("D"), "d1", attr("E"), "e1"),
-                tuple(attr("A"), "a4", attr("D"), "d2", attr("E"), "e3"),
-                tuple(attr("A"), "a5", attr("D"), "d4", attr("E"), "e2"),
-                tuple(attr("A"), "a6", attr("D"), "d1", attr("E"), "e1"),
-                tuple(attr("A"), "a7", attr("D"), "d1", attr("E"), "e2"));
-
-        // r1.setKeys(key(attr("A"), attr("C")));
-        //r2.setKeys(key(attr("D")));
-        // Relation r = r1.join(r2);
-        // Keys actual = r.getKeys();
-        //  Keys expected = keys(key());
-        // assertEquals(expected, actual);
-    }
-
-
-
-
 
 }
