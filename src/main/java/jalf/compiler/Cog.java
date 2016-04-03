@@ -74,8 +74,7 @@ public abstract class Cog {
         Key key = projection.getOperand().getKey();
         Supplier<Stream<Tuple>> supplier;
         //avoid duplicate
-        if (key.getAttrsKey().equals(on)){
-            //if (key.getIntersectKeyAttr(on,key).equals(key.getAttrsKey())){
+        if (key.getAttrsKey().difference(on).isEmpty()){
             supplier = () -> this.stream()
                     .map(t -> t.project(on, tt));
         }
@@ -93,18 +92,11 @@ public abstract class Cog {
     public Cog rename(Rename rename) {
         Renaming renaming = rename.getRenaming();
         TupleType tt = rename.getTupleType();
-        //Key oldkey=rename.getKey();
-        //System.out.println(oldkey.getAttrsKey());
-        //Key newooo=oldkey.rename(renaming);
-        //Key newkey = rename.getKey().rename(renaming);
-
 
         // stream compilation: simple renaming
         Supplier<Stream<Tuple>> supplier = () -> this.stream()
                 .map(t -> t.rename(renaming, tt));
 
-        //rename.setKey(newooo);
-        //rename.setKey(newkey);
         return new BaseCog(rename, supplier);
     }
 

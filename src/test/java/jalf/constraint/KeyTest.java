@@ -15,9 +15,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import jalf.AttrList;
 import jalf.AttrName;
 import jalf.Relation;
 import jalf.Renaming;
+import jalf.type.Heading;
 
 import org.junit.Test;
 
@@ -149,6 +151,10 @@ public class KeyTest {
         Key actual = p.getKey();
         Key expected = key(QTY);
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -161,6 +167,10 @@ public class KeyTest {
         Key actual = p.getKey();
         Key expected = key(SID, QTY);
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -174,6 +184,10 @@ public class KeyTest {
         Key actual = p.getKey();
         Key expected = key(SID, PID);
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -187,6 +201,10 @@ public class KeyTest {
         Key actual = p.getKey();
         Key expected = key(SID);
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -199,6 +217,10 @@ public class KeyTest {
         Key actual = p.getKey();
         Key expected = key(SID);
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = p.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -210,6 +232,10 @@ public class KeyTest {
         Key actual = rs.getKey();
         Key expected = key(SID, PID);
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = rs.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -236,6 +262,10 @@ public class KeyTest {
         Key actual = r.getKey();
         Key expected = key(attr("A"), attr("B"), attr("C"));
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = r.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -262,6 +292,10 @@ public class KeyTest {
         Key actual = r.getKey();
         Key expected = key(attr("A"), attr("C"));
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = r.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -288,6 +322,10 @@ public class KeyTest {
         Key actual = r.getKey();
         Key expected = key(attr("A"), attr("B"), attr("C"));
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = r.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
     @Test
@@ -314,6 +352,10 @@ public class KeyTest {
         Key actual = r.getKey();
         Key expected = key(attr("A"), attr("C"), attr("D"), attr("E"));
         assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = r.getType().getHeading();
+        AttrList l = actual.getAttrsKey().difference(h.toAttrList());
+        assertTrue(l.isEmpty());
     }
 
 }
