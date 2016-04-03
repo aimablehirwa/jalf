@@ -71,10 +71,10 @@ public class Rename extends UnaryOperator {
 
     @Override
     public void setKey(Key key) {
-
         this.operand.setKey(key);
 
     }
+
 
 
 }

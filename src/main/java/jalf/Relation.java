@@ -141,7 +141,10 @@ public interface Relation {
      */
     long cardinality();
 
-
+    /**
+     * modifie la clef primaire
+     * @param key
+     */
     void setKey(Key key);
 
 

@@ -8,7 +8,7 @@ import jalf.Relation;
 import jalf.Renaming;
 import jalf.Tuple;
 import jalf.type.TupleType;
-public class Key  implements constraint{
+public class Key  implements Constraint{
     private AttrList attrsKey;
 
     public Key(AttrList attrsKey) {

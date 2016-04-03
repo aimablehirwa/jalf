@@ -160,5 +160,11 @@ public class SetMemoryRelation extends MemoryRelation {
                 Collector.Characteristics.UNORDERED);
     }
 
+    @Override
+    public Key getKey() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 
 }

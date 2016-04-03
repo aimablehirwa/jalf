@@ -235,11 +235,11 @@ public class KeyTest {
     public void testRestrictOperatorWithKey(){
         // restrict does not have impact on the key
         Relation r = shipments();
-        // r.setKeys(key(SID, PID));
+        r.setKey(key(SID, PID));
         r.restrict(eq(SID, "S1"));
-        // Keys actual = r.getKeys();
-        // Keys expected = keys(key(SID, PID));
-        // assertEquals(expected, actual);
+        Key actual = r.getKey();
+        Key expected = key(SID, PID);
+        assertEquals(expected, actual);
     }
 
     @Test
