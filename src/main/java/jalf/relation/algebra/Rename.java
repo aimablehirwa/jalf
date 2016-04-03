@@ -68,19 +68,12 @@ public class Rename extends UnaryOperator {
 
     @Override
     public Key getKey() {
-        return this.operand.getKey();
-    }
-
-    @Override
-    public void setKey(Key key) {
-        this.operand.setKey(key);
-
+        return this.key;
     }
 
     @Override
     protected Key keyCheck() {
         return operand.getKey().rename(renaming);
-
     }
 
 }

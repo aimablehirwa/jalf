@@ -5,11 +5,13 @@ import static jalf.DSL.attrs;
 import static jalf.DSL.eq;
 import static jalf.DSL.key;
 import static jalf.DSL.relation;
+import static jalf.DSL.rename;
 import static jalf.DSL.renaming;
 import static jalf.DSL.tuple;
 import static jalf.fixtures.SuppliersAndParts.PID;
 import static jalf.fixtures.SuppliersAndParts.QTY;
 import static jalf.fixtures.SuppliersAndParts.SID;
+import static jalf.fixtures.SuppliersAndParts.SUPPLIER_ID;
 import static jalf.fixtures.SuppliersAndParts.shipments;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -96,25 +98,7 @@ public class KeyTest {
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testRenameAnAttrOfKey(){
-        Key k1 = key(SID,PID);
-        Renaming rn = renaming(SID, attr("RS"), QTY, attr("RQ"));
-        Key actual = k1.rename(rn);
-        Key expected = key(attr("RS"), PID);
-        assertEquals(expected, actual);
-    }
 
-    @Test
-    public void testRenameNotTheKey(){
-        // test renaming if there is no intersection
-        // between the key and the renaming attributes
-        Key k1 = key(PID);
-        Renaming rn = renaming(SID, attr("RS"), QTY, attr("RQ"));
-        Key actual = k1.rename(rn);
-        Key expected = key(PID);
-        assertEquals(expected, actual);
-    }
 
     @Test
     public void testKeyRelationEquality(){
@@ -142,6 +126,53 @@ public class KeyTest {
     }
 
     // test related to each operator
+
+
+    public void testRenameTheEntireKey(){
+        Relation r = shipments();
+        r.setKey(key(SID, PID));
+        Key expected = key(attr("RS"), attr("RP"));
+        Relation rn = rename(r, renaming(SID, attr("RS"), PID, attr("RP")));
+        Key actual= rn.getKey();
+        assertEquals(expected, actual);
+
+        // test if the header contain the key
+        Heading h = rn.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
+    }
+
+
+    @Test
+    public void testRenameAnAttrOfKey(){
+        Relation r = shipments();
+        r.setKey(key(SID, PID));
+        Key expected = key(SUPPLIER_ID,PID);
+        Relation rn = rename(r, renaming(SID, SUPPLIER_ID));
+        Key actual= rn.getKey();
+        assertEquals(expected, actual);
+
+        // test if the header contain the key
+        Heading h = rn.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
+    }
+
+    @Test
+    public void testRenameNotTheKey(){
+        // test renaming if there is no intersection
+        // between the key and the renaming attributes
+        Relation r = shipments();
+        r.setKey(key(SID, PID));
+        Relation rn = rename(r, renaming(QTY, attr("RQ")));
+        Key actual= rn.getKey();
+        Key expected = key(SID,PID);
+        assertEquals(expected, actual);
+        // test if the header contain the key
+        Heading h = rn.getType().getHeading();
+        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
+        assertEquals(l,actual.getAttrsKey());
+    }
 
     @Test
     public void testProjectOperatorWithKey1(){

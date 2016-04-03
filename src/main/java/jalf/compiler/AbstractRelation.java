@@ -109,7 +109,6 @@ public abstract class AbstractRelation implements Relation {
     public void setKey(Key key) {
         Key newkey = this.checkKeyValidity(key);
         this.key = newkey;
-
     }
 
     //deux vérifications les attribut et project

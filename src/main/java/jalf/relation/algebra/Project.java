@@ -1,13 +1,13 @@
 package jalf.relation.algebra;
 
+import java.util.Arrays;
+import java.util.List;
+
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
 import jalf.constraint.Key;
 import jalf.type.RelationType;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Relational projection.
@@ -67,7 +67,6 @@ public class Project extends UnaryOperator {
 
     @Override
     public Key getKey() {
-        //return operand.getKey();
         return this.key;
     }
 
