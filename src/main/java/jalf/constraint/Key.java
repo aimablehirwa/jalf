@@ -66,12 +66,9 @@ public class Key  implements Constraint{
         return new Key(newkey);
     }
 
-    public AttrList insersect(AttrList attributes) {
-        return this.attrsKey.intersect(attributes);
-    }
-
-    public AttrList union(Key key) {
-        return this.attrsKey.union(key.attrsKey);
+    public Key union(Key other) {
+        AttrList newkey=  this.attrsKey.union(other.attrsKey);
+        return new Key(newkey);
     }
 
     @Override

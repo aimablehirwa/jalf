@@ -20,20 +20,19 @@ public class Rename extends UnaryOperator {
 
     private RelationType type;
 
-    private Key key;
 
     public Rename(Relation operand, Renaming renaming, RelationType type) {
         this.operand = operand;
         this.renaming = renaming;
         this.type = type;
-        this.key = this.keyCheck();
+        this.setKey( this.keyCheck());
     }
 
     public Rename(Relation operand, Renaming renaming) {
         this.operand = operand;
         this.renaming = renaming;
         this.type = typeCheck();
-        this.key = this.keyCheck();
+        this.setKey( this.keyCheck());
     }
 
     @Override
@@ -66,10 +65,6 @@ public class Rename extends UnaryOperator {
         return visitor.visit(this);
     }
 
-    @Override
-    public Key getKey() {
-        return this.key;
-    }
 
     @Override
     protected Key keyCheck() {

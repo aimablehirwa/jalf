@@ -8,7 +8,6 @@ import jalf.Visitor;
 import jalf.compiler.AbstractRelation;
 import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
-import jalf.constraint.Key;
 import jalf.type.RelationType;
 
 /**
@@ -52,18 +51,6 @@ public class Dum extends AbstractRelation {
         Relation other = arg;
         return TYPE.equals(other.getType()) &&
                 !other.stream().findFirst().isPresent();
-    }
-
-    @Override
-    public Key getKey() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setKey(Key key) {
-        // TODO Auto-generated method stub
-
     }
 
 }

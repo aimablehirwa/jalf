@@ -1,13 +1,13 @@
 package jalf.relation.algebra;
 
+import java.util.Arrays;
+import java.util.List;
+
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
 import jalf.constraint.Key;
 import jalf.type.RelationType;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Relational natural join based on same name attributes.
@@ -20,20 +20,20 @@ public class Join extends BinaryOperator {
 
     private final RelationType type;
 
-    private final Key key;
+
 
     public Join(RelationType type, Relation left, Relation right) {
         this.left = left;
         this.right = right;
         this.type = type;
-        this.key = keyCheck();
+        this.setKey(keyCheck());
     }
 
     public Join(Relation left, Relation right){
         this.left = left;
         this.right = right;
         this.type = typeCheck();
-        this.key = keyCheck();
+        this.setKey(keyCheck());
     }
 
     @Override
@@ -78,20 +78,10 @@ public class Join extends BinaryOperator {
         return visitor.visit(this);
     }
 
-    @Override
-    public Key getKey() {
-        return this.key;
-    }
-
-    @Override
-    public void setKey(Key key) {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     protected Key keyCheck() {
-        AttrList l = left.getKey().union(right.getKey());
-        return Key.primary(l);
+        return left.getKey().union(right.getKey());
     }
 
 }

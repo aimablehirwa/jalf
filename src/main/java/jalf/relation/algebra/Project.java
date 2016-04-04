@@ -20,20 +20,20 @@ public class Project extends UnaryOperator {
 
     private final RelationType type;
 
-    private final Key key;
+
 
     public Project(Relation operand, AttrList attributes, RelationType type) {
         this.operand = operand;
         this.attributes = attributes;
         this.type = type;
-        this.key = keyCheck();
+        this.setKey(keyCheck());
     }
 
     public Project(Relation operand, AttrList attributes) {
         this.operand = operand;
         this.attributes = attributes;
         this.type = typeCheck();
-        this.key = keyCheck();
+        this.setKey(keyCheck());
     }
 
     @Override
@@ -65,17 +65,6 @@ public class Project extends UnaryOperator {
         return visitor.visit(this);
     }
 
-    @Override
-    public Key getKey() {
-        return this.key;
-    }
-
-
-    @Override
-    public void setKey(Key key) {
-        //operand.setKey(key);
-        //this.key = key;
-    }
 
     /**
      * 4 case to check
@@ -86,7 +75,7 @@ public class Project extends UnaryOperator {
      */
     @Override
     public Key keyCheck(){
-        AttrList l = operand.getKey().insersect(this.attributes);
+        AttrList l = operand.getKey().getAttrsKey().intersect(this.attributes);
         if (l.equals(operand.getKey().getAttrsKey())){
             return operand.getKey();
         }else{

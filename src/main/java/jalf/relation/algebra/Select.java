@@ -1,13 +1,13 @@
 package jalf.relation.algebra;
 
+import java.util.Arrays;
+import java.util.List;
+
 import jalf.Relation;
 import jalf.Selection;
 import jalf.Visitor;
 import jalf.constraint.Key;
 import jalf.type.RelationType;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class Select extends UnaryOperator {
 
@@ -17,18 +17,18 @@ public class Select extends UnaryOperator {
 
     private RelationType type;
 
-    private Key key;
 
     public Select(Relation operand, Selection selection, RelationType type) {
         this.operand = operand;
         this.selection = selection;
-        this.type = type;
+        this.setKey(keyCheck());
     }
 
     public Select(Relation operand, Selection selection) {
         this.operand = operand;
         this.selection = selection;
         this.type = typeCheck();
+        this.setKey(keyCheck());
     }
 
     @Override
@@ -61,18 +61,8 @@ public class Select extends UnaryOperator {
     }
 
     @Override
-    public Key getKey() {
-        return this.key;
-    }
-
-    @Override
-    public void setKey(Key key) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
     protected Key keyCheck() {
-        return null;
+        return operand.getKey();
     }
 
 }
