@@ -43,7 +43,12 @@ public class Minus extends BinaryOperator{
 
     @Override
     public Relation getRight() {
-        return right;
+        if (left.getKey().equals(right.getKey())){
+            return right.project(right.getKey().getAttrsKey());
+        }
+        else{
+            return right;
+        }
     }
 
     /**

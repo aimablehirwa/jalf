@@ -1,15 +1,19 @@
 package jalf.dsl;
 
+import static jalf.DSL.key;
 import static jalf.DSL.minus;
 import static jalf.DSL.relation;
 import static jalf.DSL.tuple;
+import static jalf.fixtures.SuppliersAndParts.NAME;
 import static jalf.fixtures.SuppliersAndParts.PID;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static org.junit.Assert.assertEquals;
-import jalf.Relation;
-import jalf.TypeException;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
+
+import jalf.Relation;
+import jalf.TypeException;
 
 
 public class MinusTest {
@@ -38,6 +42,66 @@ public class MinusTest {
 
     }
 
+
+    @Test
+    public void testItWorksAsExpectedSameKey(){
+        Relation left = relation(
+                key(SID),
+                tuple(SID, "S1",NAME ,"Berth"),
+                tuple(SID, "S2",NAME ,"Max"),
+                tuple(SID, "S3",NAME ,"Tom"),
+                tuple(SID, "S4",NAME ,"Jojo")
+                );
+        Relation right = relation(
+                key(SID),
+                tuple(SID, "S2",NAME ,"Max"),
+                tuple(SID, "S3",NAME ,"Tom"),
+                tuple(SID, "S5",NAME ,"Leny")
+                );
+        Relation expected = relation(
+                key(SID),
+                tuple(SID, "S1",NAME ,"Berth"),
+                tuple(SID, "S4",NAME ,"Jojo")
+                );
+        Relation actual = minus(left, right);
+        //verif key
+        assertEquals(right.getKey(), left.getKey());
+        assertEquals(left.getKey(), actual.getKey());
+        // real test
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    public void testItWorksAsExpectedNotSameKey(){
+        Relation left = relation(
+                key(SID),
+                tuple(SID, "S1",NAME ,"Berth"),
+                tuple(SID, "S2",NAME ,"Max"),
+                tuple(SID, "S3",NAME ,"Tom"),
+                tuple(SID, "S4",NAME ,"Jojo")
+                );
+        Relation right = relation(
+                tuple(SID, "S2",NAME ,"Max"),
+                tuple(SID, "S3",NAME ,"Tom"),
+                tuple(SID, "S5",NAME ,"Leny")
+                );
+        Relation expected = relation(
+                key(SID),
+                tuple(SID, "S1",NAME ,"Berth"),
+                tuple(SID, "S4",NAME ,"Jojo")
+                );
+        Relation actual = minus(left, right);
+        //verif key
+        assertNotEquals(right.getKey(), left.getKey());
+        assertEquals(left.getKey(), actual.getKey());
+
+
+        // real test
+        assertEquals(expected, actual);
+
+    }
+
     @Test(expected=TypeException.class)
     public void testHeaderIncompatile() {
         Relation left = relation(
@@ -49,7 +113,5 @@ public class MinusTest {
                 tuple(SID, "S3")
                 );
         minus(left, right);
-
     }
-
 }

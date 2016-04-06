@@ -191,9 +191,11 @@ public abstract class Cog {
         Supplier<Stream<Tuple>> supplier = () ->{
             Stream<Tuple> leftStream = this.stream();
             Stream<Tuple> rightStream = right.stream();
-            Set<Tuple> rightHashSet = rightStream.collect(Collectors.toCollection(HashSet::new));
+            AttrList rkey= right.getExpr().getKey().getAttrsKey();
+            AttrList leftkey= right.getExpr().getKey().getAttrsKey();
+            Map<Object, List<Tuple>> rightHashMap = rightStream.collect(groupingBy(t -> t.fetch(rkey)));
             Stream<Tuple> minusStream = leftStream
-                    .filter(x -> !rightHashSet.contains(x));
+                    .filter(x -> !rightHashMap.containsKey(x.fetch(leftkey)));
             return minusStream;
         };
         return new BaseCog(minus, supplier);

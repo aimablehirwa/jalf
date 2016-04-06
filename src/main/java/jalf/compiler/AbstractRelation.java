@@ -111,8 +111,8 @@ public abstract class AbstractRelation implements Relation {
         this.key = newkey;
     }
 
-    //deux vérifications les attribut et project
-    // si la clef n'est pas correct on désigne tous les atribut comme clef
+    //deux vérifications les attributs et project
+    // si la clef n'est pas correct on désigne tous les atributs comme clef
     public Key checkKeyValidity(Key key){
         if (key.checkKeyUniqueness(this)){
             return key;
