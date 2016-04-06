@@ -3,6 +3,7 @@ package jalf.relation.algebra;
 import java.util.Arrays;
 import java.util.List;
 
+import jalf.AttrList;
 import jalf.Relation;
 import jalf.Selection;
 import jalf.Visitor;
@@ -62,7 +63,8 @@ public class Select extends UnaryOperator {
 
     @Override
     protected Key keyCheck() {
-        return operand.getKey();
+        return Key.primary(AttrList.attrs(this.selection.gefns().keySet()));
     }
 
 }
+

@@ -7,12 +7,15 @@ import static jalf.DSL.key;
 import static jalf.DSL.relation;
 import static jalf.DSL.rename;
 import static jalf.DSL.renaming;
+import static jalf.DSL.select;
 import static jalf.DSL.tuple;
+import static jalf.fixtures.SuppliersAndParts.NAME;
 import static jalf.fixtures.SuppliersAndParts.PID;
 import static jalf.fixtures.SuppliersAndParts.QTY;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static jalf.fixtures.SuppliersAndParts.SUPPLIER_ID;
 import static jalf.fixtures.SuppliersAndParts.shipments;
+import static jalf.fixtures.SuppliersAndParts.suppliers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -24,6 +27,9 @@ import jalf.AttrList;
 import jalf.AttrName;
 import jalf.Relation;
 import jalf.Renaming;
+import jalf.Selection;
+import jalf.SelectionMember;
+import jalf.Type;
 import jalf.type.Heading;
 
 public class KeyTest {
@@ -390,6 +396,27 @@ public class KeyTest {
         Heading h = r.getType().getHeading();
         AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
         assertEquals(l,actual.getAttrsKey());
+    }
+    @Test
+    public void testSelectOperatorWithKey(){
+        AttrName LETTER = AttrName.attr("letter");
+        Relation re = relation(
+                tuple(LETTER, "h"),
+                tuple(LETTER, "s"),
+                tuple(LETTER, "e"),
+                tuple(LETTER, "k")
+                );
+        SelectionMember letterMember = SelectionMember.fn(
+                Type.scalarType(String.class),
+                t -> {
+                    String name = (String) t.get(NAME);
+                    return name.substring(name.length() - 1, name.length());
+                });
+        Selection sel = Selection.varargs(LETTER, letterMember);
+        Relation rs = select(suppliers(), sel);
+        Key actual= rs.getKey();
+        Key expected = key(LETTER);
+        assertEquals(expected, actual);
     }
 
 }

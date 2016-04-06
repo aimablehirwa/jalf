@@ -37,7 +37,7 @@ public class SetMemoryRelation extends MemoryRelation {
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples) {
         this.type = type;
         this.tuples = tuples;
-        Key  attrheading = new Key(this.type.getHeading().toAttrList());
+        Key  attrheading = new Key(type.getHeading().toAttrList());
         this.setKey(attrheading);
     }
 
@@ -94,15 +94,10 @@ public class SetMemoryRelation extends MemoryRelation {
         }
     }
 
-
     @Override
     public RelationType getType() {
         return type;
     }
-
-
-
-
 
     @Override
     public Cog toCog(Compiler compiler) {
