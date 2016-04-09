@@ -100,10 +100,12 @@ public abstract class AbstractRelation implements Relation {
     private Cog compile() {
         return accept(new Compiler());
     }
+
     @Override
     public Key getKey() {
         return this.key;
     }
+
 
     @Override
     public void setKey(Key key) {

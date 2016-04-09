@@ -194,9 +194,10 @@ public abstract class Cog {
             AttrList rkey= right.getExpr().getKey().getAttrsKey();
             AttrList leftkey= right.getExpr().getKey().getAttrsKey();
             Map<Object, List<Tuple>> rightHashMap = rightStream.collect(groupingBy(t -> t.fetch(rkey)));
+            
             Stream<Tuple> minusStream = leftStream
                     .filter(x -> !rightHashMap.containsKey(x.fetch(leftkey)));
-            return minusStream;
+                    return minusStream;
         };
         return new BaseCog(minus, supplier);
     }
