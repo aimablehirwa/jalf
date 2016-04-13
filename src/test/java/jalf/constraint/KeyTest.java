@@ -1,28 +1,8 @@
 package jalf.constraint;
 
-import static jalf.DSL.attr;
-import static jalf.DSL.attrs;
-import static jalf.DSL.eq;
-import static jalf.DSL.key;
-import static jalf.DSL.relation;
-import static jalf.DSL.rename;
-import static jalf.DSL.renaming;
-import static jalf.DSL.select;
-import static jalf.DSL.tuple;
-import static jalf.fixtures.SuppliersAndParts.NAME;
-import static jalf.fixtures.SuppliersAndParts.PID;
-import static jalf.fixtures.SuppliersAndParts.QTY;
-import static jalf.fixtures.SuppliersAndParts.SID;
-import static jalf.fixtures.SuppliersAndParts.SUPPLIER_ID;
-import static jalf.fixtures.SuppliersAndParts.shipments;
-import static jalf.fixtures.SuppliersAndParts.suppliers;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
+import static jalf.DSL.*;
+import static jalf.fixtures.SuppliersAndParts.*;
+import static org.junit.Assert.*;
 import jalf.AttrList;
 import jalf.AttrName;
 import jalf.Relation;
@@ -31,6 +11,8 @@ import jalf.Selection;
 import jalf.SelectionMember;
 import jalf.Type;
 import jalf.type.Heading;
+
+import org.junit.Test;
 
 public class KeyTest {
 
@@ -59,24 +41,16 @@ public class KeyTest {
     public void testCheckIfItisCandidateKey(){
         // test check if the key can be candidate
         Relation r = shipments();
-        r.setKey(key(SID, PID));
         Key k1 = key(SID, PID);
         assertEquals(k1,r.getKey());
     }
 
     @Test
-    public void testHeaderIsKey(){
-        // the key is the header if the key entered don't support the uniqueness constraint
-        Relation r = shipments();
-        r.setKey(key(SID));
-        Key k1 = key(SID,PID,QTY);
-        assertEquals(r.getKey(),k1);
-    }
-
-    @Test
     public void testHeaderIsKeyIfKeyNotSpecified(){
-        // the key is the header if no key specified
-        Relation r = shipments();
+        // the key is the header if the key entered don't support the uniqueness constraint
+        Relation r = relation(
+                heading(SID, String.class, PID, String.class, QTY, Integer.class),
+                tuple(SID, "S1", PID, "P1", QTY, 300));
         Key k1 = key(SID,PID,QTY);
         assertEquals(r.getKey(),k1);
     }
@@ -103,8 +77,6 @@ public class KeyTest {
         Key expected = key(attr("RS"), attr("RP"));
         assertEquals(expected, actual);
     }
-
-
 
     @Test
     public void testKeyRelationEquality(){
@@ -136,7 +108,6 @@ public class KeyTest {
 
     public void testRenameTheEntireKey(){
         Relation r = shipments();
-        r.setKey(key(SID, PID));
         Key expected = key(attr("RS"), attr("RP"));
         Relation rn = rename(r, renaming(SID, attr("RS"), PID, attr("RP")));
         Key actual= rn.getKey();
@@ -152,7 +123,6 @@ public class KeyTest {
     @Test
     public void testRenameAnAttrOfKey(){
         Relation r = shipments();
-        r.setKey(key(SID, PID));
         Key expected = key(SUPPLIER_ID,PID);
         Relation rn = rename(r, renaming(SID, SUPPLIER_ID));
         Key actual= rn.getKey();
@@ -169,7 +139,6 @@ public class KeyTest {
         // test renaming if there is no intersection
         // between the key and the renaming attributes
         Relation r = shipments();
-        r.setKey(key(SID, PID));
         Relation rn = rename(r, renaming(QTY, attr("RQ")));
         Key actual= rn.getKey();
         Key expected = key(SID,PID);
@@ -184,7 +153,6 @@ public class KeyTest {
     public void testProjectOperatorWithKey1(){
         // test Ps intersect Kx = null : Kn = Ps
         Relation r = shipments();
-        r.setKey(key(SID, PID));
         Relation p = r.project(attrs(QTY));
         Key actual = p.getKey();
         Key expected = key(QTY);
@@ -200,7 +168,6 @@ public class KeyTest {
         // test Ps intersect Kx = Psx : Kn = on
         // the new key must be the projected attributes
         Relation r = shipments();
-        r.setKey(key(SID, PID));
         Relation p = r.project(attrs(SID, QTY));
         Key actual = p.getKey();
         Key expected = key(SID, QTY);
@@ -217,7 +184,6 @@ public class KeyTest {
         // the key and the projected attributes are the same,
         // so the key of the projection is the key of r
         Relation r = shipments();
-        r.setKey(key(SID, PID));
         Relation p = r.project(attrs(SID, PID, QTY));
         Key actual = p.getKey();
         Key expected = key(SID, PID);
@@ -234,7 +200,6 @@ public class KeyTest {
         // the key and the projected attributes are the same,
         // so the key of the projection is the key of r
         Relation r = shipments();
-        r.setKey(key(SID, PID));
         Relation p = r.project(attrs(SID));
         Key actual = p.getKey();
         Key expected = key(SID);
@@ -265,7 +230,6 @@ public class KeyTest {
     public void testRestrictOperatorWithKey(){
         // restrict does not have impact on the key
         Relation r = shipments();
-        r.setKey(key(SID, PID));
 
         Relation rs = r.restrict(eq(SID, "S1"));
         Key actual = rs.getKey();
@@ -283,6 +247,7 @@ public class KeyTest {
         // intersect header compatible
         // k1 union k2
         Relation r1 = relation(
+                key(attr("A"), attr("C")),
                 tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
                 tuple(attr("A"), "a1", attr("B"), "b3", attr("C"), "c2"),
@@ -290,14 +255,13 @@ public class KeyTest {
                 tuple(attr("A"), "a3", attr("B"), "b3", attr("C"), "c4"));
 
         Relation r2 = relation(
+                key(attr("A"), attr("B")),
                 tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
                 tuple(attr("A"), "a2", attr("B"), "b4", attr("C"), "c2"),
                 tuple(attr("A"), "a2", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
-        r1.setKey(key(attr("A"), attr("C")));
-        r2.setKey(key(attr("A"), attr("B")));
         Relation r = r1.intersect(r2);
         Key actual = r.getKey();
         Key expected = key(attr("A"), attr("B"), attr("C"));
@@ -313,6 +277,7 @@ public class KeyTest {
         // minus with header compatible
         // k1
         Relation r1 = relation(
+                key(attr("A"), attr("C")),
                 tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
                 tuple(attr("A"), "a1", attr("B"), "b3", attr("C"), "c2"),
@@ -320,14 +285,13 @@ public class KeyTest {
                 tuple(attr("A"), "a3", attr("B"), "b3", attr("C"), "c4"));
 
         Relation r2 = relation(
+                key(attr("A"), attr("B")),
                 tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
                 tuple(attr("A"), "a2", attr("B"), "b4", attr("C"), "c2"),
                 tuple(attr("A"), "a2", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
-        r1.setKey(key(attr("A"), attr("C")));
-        r2.setKey(key(attr("A"), attr("B")));
         Relation r = r1.minus(r2);
         Key actual = r.getKey();
         Key expected = key(attr("A"), attr("C"));
@@ -343,6 +307,7 @@ public class KeyTest {
         // union with header compatible
         // k1 union k2
         Relation r1 = relation(
+                key(attr("A"), attr("C")),
                 tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
                 tuple(attr("A"), "a1", attr("B"), "b3", attr("C"), "c2"),
@@ -350,14 +315,13 @@ public class KeyTest {
                 tuple(attr("A"), "a3", attr("B"), "b3", attr("C"), "c4"));
 
         Relation r2 = relation(
+                key(attr("A"), attr("B")),
                 tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
                 tuple(attr("A"), "a2", attr("B"), "b4", attr("C"), "c2"),
                 tuple(attr("A"), "a2", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
-        r1.setKey(key(attr("A"), attr("C")));
-        r2.setKey(key(attr("A"), attr("B")));
         Relation r = r1.union(r2);
         Key actual = r.getKey();
         Key expected = key(attr("A"), attr("B"), attr("C"));
@@ -373,6 +337,7 @@ public class KeyTest {
         // join
         // k1 union k2
         Relation r1 = relation(
+                key(attr("A"), attr("C")),
                 tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
                 tuple(attr("A"), "a1", attr("B"), "b2", attr("C"), "c3"),
                 tuple(attr("A"), "a1", attr("B"), "b3", attr("C"), "c2"),
@@ -380,14 +345,12 @@ public class KeyTest {
                 tuple(attr("A"), "a3", attr("B"), "b3", attr("C"), "c4"));
 
         Relation r2 = relation(
+                key(attr("D"), attr("E")),
                 tuple(attr("A"), "a1", attr("D"), "d1", attr("E"), "e1"),
                 tuple(attr("A"), "a1", attr("D"), "d2", attr("E"), "e3"),
                 tuple(attr("A"), "a2", attr("D"), "d4", attr("E"), "e2"),
-                tuple(attr("A"), "a2", attr("D"), "d1", attr("E"), "e1"),
                 tuple(attr("A"), "a3", attr("D"), "d1", attr("E"), "e2"));
 
-        r1.setKey(key(attr("A"), attr("C")));
-        r2.setKey(key(attr("D")));
         Relation r = r1.join(r2);
         Key actual = r.getKey();
         Key expected = key(attr("A"), attr("C"), attr("D"), attr("E"));
@@ -397,6 +360,7 @@ public class KeyTest {
         AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
         assertEquals(l,actual.getAttrsKey());
     }
+
     @Test
     public void testSelectOperatorWithKey(){
         AttrName LETTER = AttrName.attr("letter");

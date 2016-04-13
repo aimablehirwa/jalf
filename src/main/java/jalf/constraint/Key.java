@@ -10,6 +10,9 @@ import jalf.Tuple;
 import jalf.type.TupleType;
 
 public class Key  implements Constraint{
+
+    public static final Key EMPTY = new Key(AttrList.EMPTY);
+
     private AttrList attrsKey;
 
     public Key(AttrList attrsKey) {

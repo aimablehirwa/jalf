@@ -25,14 +25,12 @@ public class Restrict extends UnaryOperator {
         this.operand = operand;
         this.predicate = predicate;
         this.type = type;
-        this.setKey(keyCheck());
     }
 
     public Restrict(Relation operand, Predicate predicate) {
         this.operand = operand;
         this.predicate = predicate;
         this.type = typeCheck();
-        this.setKey(keyCheck());
     }
 
     @Override
@@ -70,7 +68,7 @@ public class Restrict extends UnaryOperator {
      * @see jalf.relation.algebra.Operator#keyCheck()
      */
     @Override
-    protected Key keyCheck() {
+    protected Key lazyComputeKey() {
         return this.operand.getKey();
     }
 

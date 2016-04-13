@@ -3,6 +3,7 @@ package jalf.relation.materialized;
 import jalf.Relation;
 import jalf.Tuple;
 import jalf.compiler.AbstractRelation;
+import jalf.constraint.Key;
 import jalf.relation.algebra.LeafOperand;
 import jalf.type.RelationType;
 
@@ -13,6 +14,13 @@ import java.util.stream.Collector;
  * whatever their actual representation.
  */
 public abstract class MemoryRelation extends AbstractRelation implements LeafOperand {
+
+    protected Key key;
+
+    @Override
+    public Key getKey() {
+        return key;
+    }
 
     public static Collector<Tuple, ?, Relation> collector(RelationType type) {
         return SetMemoryRelation.collector(type);

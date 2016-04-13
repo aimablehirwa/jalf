@@ -22,14 +22,12 @@ public class Select extends UnaryOperator {
     public Select(Relation operand, Selection selection, RelationType type) {
         this.operand = operand;
         this.selection = selection;
-        this.setKey(keyCheck());
     }
 
     public Select(Relation operand, Selection selection) {
         this.operand = operand;
         this.selection = selection;
         this.type = typeCheck();
-        this.setKey(keyCheck());
     }
 
     @Override
@@ -62,7 +60,7 @@ public class Select extends UnaryOperator {
     }
 
     @Override
-    protected Key keyCheck() {
+    protected Key lazyComputeKey() {
         return Key.primary(AttrList.attrs(this.selection.gefns().keySet()));
     }
 

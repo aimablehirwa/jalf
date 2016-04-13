@@ -131,10 +131,4 @@ public class Optimized<R extends Relation> extends AbstractRelation {
         return null;
     }
 
-    @Override
-    public void setKey(Key key) {
-        // TODO Auto-generated method stub
-
-    }
-
 }

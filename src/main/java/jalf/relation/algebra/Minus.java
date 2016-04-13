@@ -21,14 +21,12 @@ public class Minus extends BinaryOperator{
         this.left = left;
         this.right = right;
         this.type = type;
-        this.setKey(keyCheck());
     }
 
     public Minus(Relation left, Relation right){
         this.left = left;
         this.right = right;
         this.type = typeCheck();
-        this.setKey(keyCheck());
     }
 
     @Override
@@ -77,7 +75,7 @@ public class Minus extends BinaryOperator{
 
 
     @Override
-    protected Key keyCheck() {
+    protected Key lazyComputeKey() {
         return this.left.getKey();
     }
 }

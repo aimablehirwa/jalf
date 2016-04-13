@@ -25,14 +25,12 @@ public class Rename extends UnaryOperator {
         this.operand = operand;
         this.renaming = renaming;
         this.type = type;
-        this.setKey( this.keyCheck());
     }
 
     public Rename(Relation operand, Renaming renaming) {
         this.operand = operand;
         this.renaming = renaming;
         this.type = typeCheck();
-        this.setKey( this.keyCheck());
     }
 
     @Override
@@ -67,7 +65,7 @@ public class Rename extends UnaryOperator {
 
 
     @Override
-    protected Key keyCheck() {
+    protected Key lazyComputeKey() {
         return operand.getKey().rename(renaming);
     }
 

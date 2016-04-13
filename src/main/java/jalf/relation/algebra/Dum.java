@@ -8,6 +8,7 @@ import jalf.Visitor;
 import jalf.compiler.AbstractRelation;
 import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
+import jalf.constraint.Key;
 import jalf.type.RelationType;
 
 /**
@@ -26,6 +27,11 @@ public class Dum extends AbstractRelation {
             INSTANCE = new Dum();
         }
         return INSTANCE;
+    }
+
+    @Override
+    public Key getKey() {
+        return Key.EMPTY;
     }
 
     @Override

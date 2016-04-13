@@ -26,14 +26,12 @@ public class Project extends UnaryOperator {
         this.operand = operand;
         this.attributes = attributes;
         this.type = type;
-        this.setKey(keyCheck());
     }
 
     public Project(Relation operand, AttrList attributes) {
         this.operand = operand;
         this.attributes = attributes;
         this.type = typeCheck();
-        this.setKey(keyCheck());
     }
 
     @Override
@@ -74,7 +72,7 @@ public class Project extends UnaryOperator {
      * - Ps intersect Kx = sx : Kn = on
      */
     @Override
-    public Key keyCheck(){
+    public Key lazyComputeKey(){
         AttrList l = operand.getKey().getAttrsKey().intersect(this.attributes);
         if (l.equals(operand.getKey().getAttrsKey())){
             return operand.getKey();

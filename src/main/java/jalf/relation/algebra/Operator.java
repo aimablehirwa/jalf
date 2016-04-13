@@ -14,6 +14,18 @@ import java.util.List;
  */
 public abstract class Operator extends AbstractRelation {
 
+    protected Key key;
+
+    @Override
+    public Key getKey() {
+        if (this.key == null) {
+            this.key = this.lazyComputeKey();
+        }
+        return this.key;
+    }
+
+    protected abstract Key lazyComputeKey();
+
     protected abstract RelationType typeCheck();
 
     public abstract List<Relation> getOperands();
@@ -29,7 +41,5 @@ public abstract class Operator extends AbstractRelation {
                     .collect(MemoryRelation.collector(getType()))
                     .equals(other);
     }
-
-    protected abstract Key keyCheck();
 
 }

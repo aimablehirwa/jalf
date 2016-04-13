@@ -31,21 +31,18 @@ public class SetMemoryRelation extends MemoryRelation {
 
     private Collection<Tuple> tuples;
 
-
-
-    //no key préciser tout les attributs deviennent la clef  de la relation
-    public SetMemoryRelation(RelationType type, Set<Tuple> tuples) {
-        this.type = type;
-        this.tuples = tuples;
-        Key  attrheading = new Key(type.getHeading().toAttrList());
-        this.setKey(attrheading);
-    }
-
     //ici on précise la clef
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples, Key key) {
         this.type = type;
         this.tuples = tuples;
-        this.setKey(checkKeyValidity(key));
+        this.key = key;
+        if (!key.checkKeyUniqueness(this))
+            throw new IllegalArgumentException("Invalid key!");
+    }
+
+    //no key préciser tout les attributs deviennent la clef  de la relation
+    public SetMemoryRelation(RelationType type, Set<Tuple> tuples) {
+        this(type, tuples, new Key(type.getHeading().toAttrList()));
     }
 
     public SetMemoryRelation(RelationType type, Tuple[] tuples) {

@@ -26,14 +26,12 @@ public class Join extends BinaryOperator {
         this.left = left;
         this.right = right;
         this.type = type;
-        this.setKey(keyCheck());
     }
 
     public Join(Relation left, Relation right){
         this.left = left;
         this.right = right;
         this.type = typeCheck();
-        this.setKey(keyCheck());
     }
 
     @Override
@@ -80,7 +78,7 @@ public class Join extends BinaryOperator {
 
 
     @Override
-    protected Key keyCheck() {
+    protected Key lazyComputeKey() {
         return left.getKey().union(right.getKey());
     }
 
