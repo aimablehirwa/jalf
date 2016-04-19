@@ -1,11 +1,12 @@
 package jalf;
 
+import java.util.stream.Stream;
+
 import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.relation.materialized.SetMemoryRelation;
 import jalf.type.Heading;
 import jalf.type.RelationType;
-
-import java.util.stream.Stream;
 
 /**
  * @author amirm
@@ -87,6 +88,10 @@ public class DSL {
 
     public static Key key(AttrName... attrkey) {
         return Key.primary(attrs(attrkey));
+    }
+
+    public static Keys keys(Key... keys) {
+        return Keys.keys(keys);
     }
 
     // Tuple

@@ -23,9 +23,12 @@ public class Keys implements  Iterable<Key>{
         this(setOf(keys));
     }
 
-
     public Keys(Key key) {
         this(setOf(key));
+    }
+
+    public static Keys keys(Key[] keys) {
+        return new Keys(keys);
     }
 
     @Override
