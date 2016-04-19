@@ -6,7 +6,7 @@ import java.util.List;
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
-import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 
 /**
@@ -78,8 +78,8 @@ public class Join extends BinaryOperator {
 
 
     @Override
-    protected Key lazyComputeKey() {
-        return left.getKey().union(right.getKey());
+    protected Keys lazyComputeKey() {
+        return left.getKeys().union(right.getKeys());
     }
 
 }

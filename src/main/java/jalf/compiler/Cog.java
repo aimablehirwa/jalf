@@ -18,6 +18,7 @@ import jalf.Renaming;
 import jalf.Selection;
 import jalf.Tuple;
 import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.relation.algebra.Intersect;
 import jalf.relation.algebra.Join;
 import jalf.relation.algebra.Minus;
@@ -72,10 +73,11 @@ public abstract class Cog {
     public Cog project(Project projection) {
         AttrList on = projection.getAttributes();
         TupleType tt = projection.getTupleType();
-        Key key = projection.getOperand().getKey();
+        Keys keys = projection.getOperand().getKeys();
+        Key key =keys.toList().get(0);
         Supplier<Stream<Tuple>> supplier;
         //avoid duplicate
-        if (key.getIntersectKeyAttr(on).equals(key.getAttrsKey())){
+        if (key.toAttrList().intersect(on).equals(key.toAttrList())){
             supplier = () -> this.stream()
                     .map(t -> t.project(on, tt));
         }
@@ -191,13 +193,17 @@ public abstract class Cog {
         Supplier<Stream<Tuple>> supplier = () ->{
             Stream<Tuple> leftStream = this.stream();
             Stream<Tuple> rightStream = right.stream();
-            AttrList rkey= right.getExpr().getKey().getAttrsKey();
-            AttrList leftkey= right.getExpr().getKey().getAttrsKey();
+            Keys keysr = right.getExpr().getKeys();
+            Key keyr =keysr.toList().get(0);
+            Keys keysl = right.getExpr().getKeys();
+            Key keyl =keysl.toList().get(0);
+            AttrList rkey= keyr.toAttrList();
+            AttrList leftkey= keyl.toAttrList();
             Map<Object, List<Tuple>> rightHashMap = rightStream.collect(groupingBy(t -> t.fetch(rkey)));
-            
+
             Stream<Tuple> minusStream = leftStream
                     .filter(x -> !rightHashMap.containsKey(x.fetch(leftkey)));
-                    return minusStream;
+            return minusStream;
         };
         return new BaseCog(minus, supplier);
     }

@@ -1,8 +1,29 @@
 package jalf.constraint;
 
-import static jalf.DSL.*;
-import static jalf.fixtures.SuppliersAndParts.*;
-import static org.junit.Assert.*;
+import static jalf.DSL.attr;
+import static jalf.DSL.attrs;
+import static jalf.DSL.eq;
+import static jalf.DSL.heading;
+import static jalf.DSL.key;
+import static jalf.DSL.relation;
+import static jalf.DSL.rename;
+import static jalf.DSL.renaming;
+import static jalf.DSL.select;
+import static jalf.DSL.tuple;
+import static jalf.fixtures.SuppliersAndParts.NAME;
+import static jalf.fixtures.SuppliersAndParts.PID;
+import static jalf.fixtures.SuppliersAndParts.QTY;
+import static jalf.fixtures.SuppliersAndParts.SID;
+import static jalf.fixtures.SuppliersAndParts.SUPPLIER_ID;
+import static jalf.fixtures.SuppliersAndParts.shipments;
+import static jalf.fixtures.SuppliersAndParts.suppliers;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import jalf.AttrList;
 import jalf.AttrName;
 import jalf.Relation;
@@ -11,8 +32,6 @@ import jalf.Selection;
 import jalf.SelectionMember;
 import jalf.Type;
 import jalf.type.Heading;
-
-import org.junit.Test;
 
 public class KeyTest {
 
@@ -42,7 +61,7 @@ public class KeyTest {
         // test check if the key can be candidate
         Relation r = shipments();
         Key k1 = key(SID, PID);
-        assertEquals(k1,r.getKey());
+        assertEquals(k1,r.getKeys().toList().get(0));
     }
 
     @Test
@@ -52,21 +71,21 @@ public class KeyTest {
                 heading(SID, String.class, PID, String.class, QTY, Integer.class),
                 tuple(SID, "S1", PID, "P1", QTY, 300));
         Key k1 = key(SID,PID,QTY);
-        assertEquals(r.getKey(),k1);
+        assertEquals(r.getKeys().toList().get(0),k1);
     }
 
     @Test
     public void testCheckKeyUniquenessTrue(){
         Relation r = shipments();
         Key k = key(SID, PID);
-        assertTrue(k.checkKeyUniqueness(r));
+        assertTrue(k.check(r));
     }
 
     @Test
     public void testCheckKeyUniquenessFalse(){
         Relation r = shipments();
         Key k = key(SID);
-        assertFalse(k.checkKeyUniqueness(r));
+        assertFalse(k.check(r));
     }
 
     @Test
@@ -82,7 +101,7 @@ public class KeyTest {
     public void testKeyRelationEquality(){
         Relation r1 = shipments();
         Relation r2 = shipments();
-        assertEquals(r1.getKey(), r2.getKey());
+        assertEquals(r1.getKeys().toList().get(0), r2.getKeys().toList().get(0));
     }
 
     @Test
@@ -100,7 +119,7 @@ public class KeyTest {
                 tuple(LETTER, "e"),
                 tuple(LETTER, "k")
                 );
-        assertEquals(r1.getKey(), r2.getKey());
+        assertEquals(r1.getKeys().toList().get(0), r2.getKeys().toList().get(0));
     }
 
     // test related to each operator
@@ -110,13 +129,13 @@ public class KeyTest {
         Relation r = shipments();
         Key expected = key(attr("RS"), attr("RP"));
         Relation rn = rename(r, renaming(SID, attr("RS"), PID, attr("RP")));
-        Key actual= rn.getKey();
+        Key actual= rn.getKeys().toList().get(0);
         assertEquals(expected, actual);
 
         // test if the header contain the key
         Heading h = rn.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
 
@@ -125,13 +144,13 @@ public class KeyTest {
         Relation r = shipments();
         Key expected = key(SUPPLIER_ID,PID);
         Relation rn = rename(r, renaming(SID, SUPPLIER_ID));
-        Key actual= rn.getKey();
+        Key actual= rn.getKeys().toList().get(0);
         assertEquals(expected, actual);
 
         // test if the header contain the key
         Heading h = rn.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -140,13 +159,13 @@ public class KeyTest {
         // between the key and the renaming attributes
         Relation r = shipments();
         Relation rn = rename(r, renaming(QTY, attr("RQ")));
-        Key actual= rn.getKey();
+        Key actual=  rn.getKeys().toList().get(0);
         Key expected = key(SID,PID);
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = rn.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -154,13 +173,13 @@ public class KeyTest {
         // test Ps intersect Kx = null : Kn = Ps
         Relation r = shipments();
         Relation p = r.project(attrs(QTY));
-        Key actual = p.getKey();
+        Key actual = p.getKeys().toList().get(0);
         Key expected = key(QTY);
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = p.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -169,13 +188,13 @@ public class KeyTest {
         // the new key must be the projected attributes
         Relation r = shipments();
         Relation p = r.project(attrs(SID, QTY));
-        Key actual = p.getKey();
+        Key actual =p.getKeys().toList().get(0);
         Key expected = key(SID, QTY);
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = p.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -185,13 +204,13 @@ public class KeyTest {
         // so the key of the projection is the key of r
         Relation r = shipments();
         Relation p = r.project(attrs(SID, PID, QTY));
-        Key actual = p.getKey();
+        Key actual = p.getKeys().toList().get(0);
         Key expected = key(SID, PID);
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = p.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -201,13 +220,13 @@ public class KeyTest {
         // so the key of the projection is the key of r
         Relation r = shipments();
         Relation p = r.project(attrs(SID));
-        Key actual = p.getKey();
+        Key actual =p.getKeys().toList().get(0);
         Key expected = key(SID);
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = p.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -217,13 +236,13 @@ public class KeyTest {
         // so the key of the projection is the key of r
         Relation r = shipments();
         Relation p = r.project(attrs(SID));
-        Key actual = p.getKey();
+        Key actual = p.getKeys().toList().get(0);
         Key expected = key(SID);
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = p.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -232,13 +251,13 @@ public class KeyTest {
         Relation r = shipments();
 
         Relation rs = r.restrict(eq(SID, "S1"));
-        Key actual = rs.getKey();
+        Key actual =rs.getKeys().toList().get(0);
         Key expected = key(SID, PID);
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = rs.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
 
     }
 
@@ -263,13 +282,13 @@ public class KeyTest {
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
         Relation r = r1.intersect(r2);
-        Key actual = r.getKey();
+        Key actual = r.getKeys().toList().get(0);
         Key expected = key(attr("A"), attr("B"), attr("C"));
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = r.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -293,13 +312,13 @@ public class KeyTest {
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
         Relation r = r1.minus(r2);
-        Key actual = r.getKey();
+        Key actual = r.getKeys().toList().get(0);
         Key expected = key(attr("A"), attr("C"));
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = r.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -323,13 +342,13 @@ public class KeyTest {
                 tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
         Relation r = r1.union(r2);
-        Key actual = r.getKey();
+        Key actual = r.getKeys().toList().get(0);
         Key expected = key(attr("A"), attr("B"), attr("C"));
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = r.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -352,13 +371,13 @@ public class KeyTest {
                 tuple(attr("A"), "a3", attr("D"), "d1", attr("E"), "e2"));
 
         Relation r = r1.join(r2);
-        Key actual = r.getKey();
+        Key actual = r.getKeys().toList().get(0);
         Key expected = key(attr("A"), attr("C"), attr("D"), attr("E"));
         assertEquals(expected, actual);
         // test if the header contain the key
         Heading h = r.getType().getHeading();
-        AttrList l =  h.toAttrList().intersect(actual.getAttrsKey());
-        assertEquals(l,actual.getAttrsKey());
+        AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+        assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -378,7 +397,7 @@ public class KeyTest {
                 });
         Selection sel = Selection.varargs(LETTER, letterMember);
         Relation rs = select(suppliers(), sel);
-        Key actual= rs.getKey();
+        Key actual= rs.getKeys().toList().get(0);
         Key expected = key(LETTER);
         assertEquals(expected, actual);
     }

@@ -6,7 +6,7 @@ import java.util.List;
 import jalf.Relation;
 import jalf.Renaming;
 import jalf.Visitor;
-import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 
 /**
@@ -63,10 +63,9 @@ public class Rename extends UnaryOperator {
         return visitor.visit(this);
     }
 
-
     @Override
-    protected Key lazyComputeKey() {
-        return operand.getKey().rename(renaming);
+    protected Keys lazyComputeKey() {
+        return operand.getKeys().rename(renaming);
     }
 
 }

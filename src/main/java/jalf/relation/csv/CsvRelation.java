@@ -21,7 +21,7 @@ import jalf.compiler.AbstractRelation;
 import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
 import jalf.compiler.Compiler;
-import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.relation.algebra.LeafOperand;
 import jalf.relation.materialized.SetMemoryRelation;
 import jalf.type.Heading;
@@ -142,7 +142,7 @@ public class CsvRelation extends AbstractRelation implements LeafOperand {
     }
 
     @Override
-    public Key getKey() {
+    public Keys getKeys() {
         // TODO Auto-generated method stub
         return null;
     }

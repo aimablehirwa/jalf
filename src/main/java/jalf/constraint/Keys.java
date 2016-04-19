@@ -2,34 +2,41 @@ package jalf.constraint;
 
 import static jalf.util.CollectionUtils.setOf;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Keys implements  Iterable<Constraint>{
-    //attention ne peut conntenir qu'une seul primary keys
-    private Set<Constraint> constraints;
+import jalf.Renaming;
 
-    public Keys( Set<Constraint> constraints) {
-        this.constraints = constraints;
+public class Keys implements  Iterable<Key>{
+
+    private Set<Key> keys;
+
+    public Keys( Set<Key> keys) {
+        this.keys = keys;
     }
 
-    public Keys(Constraint[] constraints) {
-        this(setOf(constraints));
+    public Keys(Key[] keys) {
+        this(setOf(keys));
     }
 
+
+    public Keys(Key key) {
+        this(setOf(key));
+    }
 
     @Override
-    public Iterator<Constraint> iterator() {
-        return constraints.iterator();
+    public Iterator<Key> iterator() {
+        return keys.iterator();
 
     }
 
     @Override
     public int hashCode() {
-        return constraints.hashCode();
+        return keys.hashCode();
     }
 
 
@@ -40,28 +47,47 @@ public class Keys implements  Iterable<Constraint>{
         if (obj == null || getClass() != obj.getClass())
             return false;
         Keys other = (Keys) obj;
-        return constraints.equals(other.constraints);
+        return keys.equals(other.keys);
     }
 
 
 
-    public Stream<Constraint> stream() {
-        return constraints.stream();
+    public Stream<Key> stream() {
+        return keys.stream();
     }
 
 
     @Override
     public String toString() {
         return "keys("
-                + constraints.stream().flatMap(a-> a.getAttrsKey()
+                + keys.stream().flatMap(a-> a.toAttrList()
                         .stream().map(b -> b.getName()))
                 .collect(Collectors.joining(", ")) + ")";
 
     }
+    public Keys rename(Renaming renaming) {
 
-    public List<Constraint> toList() {
-        return constraints.stream().collect(Collectors.toList());
+        Set <Key> keyrename= this.keys.stream()
+                .map(k-> k.rename(renaming))
+                .collect(Collectors.toSet());
+        return new Keys(keyrename);
     }
 
+
+    public List<Key> toList() {
+        return keys.stream().collect(Collectors.toList());
+    }
+
+    public Keys union(Keys other) {
+        Set<Key> keyunion = new  HashSet<Key>();
+        this.stream().forEach((k) ->{
+            Set<Key> newset=other.keys.stream().
+                    map(o->o.union(k))
+                    .collect(Collectors.toSet());
+            keyunion.addAll(newset);
+            ;}
+                );
+        return  new Keys(keyunion);
+    }
 
 }

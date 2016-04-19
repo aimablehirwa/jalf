@@ -8,7 +8,7 @@ import jalf.Visitor;
 import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
 import jalf.compiler.Compiler;
-import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 
 public class EmptyRelation extends MemoryRelation {
@@ -45,7 +45,7 @@ public class EmptyRelation extends MemoryRelation {
     }
 
     @Override
-    public Key getKey() {
+    public Keys getKeys() {
         // TODO Auto-generated method stub
         return null;
     }

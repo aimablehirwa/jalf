@@ -17,6 +17,7 @@ import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
 import jalf.compiler.Compiler;
 import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 import jalf.type.TupleType;
 import jalf.util.CollectionUtils;
@@ -35,8 +36,8 @@ public class SetMemoryRelation extends MemoryRelation {
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples, Key key) {
         this.type = type;
         this.tuples = tuples;
-        this.key = key;
-        if (!key.checkKeyUniqueness(this))
+        this.keys = new Keys(key);
+        if (!key.check(this))
             throw new IllegalArgumentException("Invalid key!");
     }
 

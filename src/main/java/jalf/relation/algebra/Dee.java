@@ -1,6 +1,8 @@
 package jalf.relation.algebra;
 
-import jalf.AttrList;
+import java.util.Collections;
+import java.util.Set;
+
 import jalf.Relation;
 import jalf.Tuple;
 import jalf.Visitor;
@@ -8,9 +10,8 @@ import jalf.compiler.AbstractRelation;
 import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
 import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
-
-import java.util.Collections;
 
 /**
  * Dee, the relation with no attribute but one tuple.
@@ -33,8 +34,8 @@ public class Dee extends AbstractRelation {
     }
 
     @Override
-    public Key getKey() {
-        return Key.EMPTY;
+    public Keys getKeys() {
+        return new Keys((Set<Key>) Key.EMPTY);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package jalf.relation.algebra;
 
 import java.util.Collections;
+import java.util.Set;
 
 import jalf.Relation;
 import jalf.Tuple;
@@ -9,6 +10,7 @@ import jalf.compiler.AbstractRelation;
 import jalf.compiler.BaseCog;
 import jalf.compiler.Cog;
 import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 
 /**
@@ -30,8 +32,9 @@ public class Dum extends AbstractRelation {
     }
 
     @Override
-    public Key getKey() {
-        return Key.EMPTY;
+    public Keys getKeys() {
+        return new Keys((Set<Key>) Key.EMPTY);
+        //return Key.EMPTY;
     }
 
     @Override

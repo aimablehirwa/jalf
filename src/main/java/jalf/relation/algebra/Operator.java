@@ -1,12 +1,12 @@
 package jalf.relation.algebra;
 
+import java.util.List;
+
 import jalf.Relation;
 import jalf.compiler.AbstractRelation;
-import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.relation.materialized.MemoryRelation;
 import jalf.type.RelationType;
-
-import java.util.List;
 
 /**
  * Parent (abstract) class for all relations captured by lazy-evaluated
@@ -14,17 +14,17 @@ import java.util.List;
  */
 public abstract class Operator extends AbstractRelation {
 
-    protected Key key;
+    protected Keys keys;
 
     @Override
-    public Key getKey() {
-        if (this.key == null) {
-            this.key = this.lazyComputeKey();
+    public Keys getKeys() {
+        if (this.keys == null) {
+            this.keys = this.lazyComputeKey();
         }
-        return this.key;
+        return this.keys;
     }
 
-    protected abstract Key lazyComputeKey();
+    protected abstract Keys lazyComputeKey();
 
     protected abstract RelationType typeCheck();
 

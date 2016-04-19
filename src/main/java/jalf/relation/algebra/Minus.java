@@ -6,7 +6,7 @@ import java.util.List;
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
-import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 
 public class Minus extends BinaryOperator{
@@ -41,12 +41,8 @@ public class Minus extends BinaryOperator{
 
     @Override
     public Relation getRight() {
-        if (left.getKey().getIntersectKeyAttr(right.getKey().getAttrsKey()).equals(left.getKey().getAttrsKey())){
-            return right.project(right.getKey().getAttrsKey());
-        }
-        else{
-            return right;
-        }
+        return right;
+
     }
 
     /**
@@ -75,7 +71,7 @@ public class Minus extends BinaryOperator{
 
 
     @Override
-    protected Key lazyComputeKey() {
-        return this.left.getKey();
+    protected Keys lazyComputeKey() {
+        return this.left.getKeys();
     }
 }

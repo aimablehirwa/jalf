@@ -6,7 +6,7 @@ import jalf.Relation;
 import jalf.Renaming;
 import jalf.Visitor;
 import jalf.compiler.AbstractRelation;
-import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.relation.materialized.EmptyRelation;
 import jalf.type.RelationType;
 
@@ -126,9 +126,8 @@ public class Optimized<R extends Relation> extends AbstractRelation {
     }
 
     @Override
-    public Key getKey() {
-        // TODO Auto-generated method stub
-        return null;
+    public Keys getKeys() {
+        return operator.getKeys();
     }
 
 }

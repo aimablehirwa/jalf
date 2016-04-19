@@ -2,11 +2,15 @@ package jalf.relation.algebra;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
 import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 
 /**
@@ -72,12 +76,18 @@ public class Project extends UnaryOperator {
      * - Ps intersect Kx = sx : Kn = on
      */
     @Override
-    public Key lazyComputeKey(){
-        AttrList l = operand.getKey().getAttrsKey().intersect(this.attributes);
-        if (l.equals(operand.getKey().getAttrsKey())){
-            return operand.getKey();
-        }else{
-            return Key.primary(this.attributes);
+    public Keys lazyComputeKey(){
+        Keys keys=operand.getKeys();
+
+        Predicate<Key> P= (k)-> k.toAttrList().intersect(this.attributes).equals(k.toAttrList());
+        Set<Key> keyfilter=keys.stream().filter(P).collect(Collectors.toSet());
+        if( keyfilter.isEmpty()){
+            //aucune clef est bonne
+            return  new Keys(Key.primary(this.attributes));
+        }
+        else{
+            //on a filtrer les mauvaises clefs
+            return  new Keys(keyfilter);
         }
     }
 

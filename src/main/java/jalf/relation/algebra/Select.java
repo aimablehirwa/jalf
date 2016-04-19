@@ -8,6 +8,7 @@ import jalf.Relation;
 import jalf.Selection;
 import jalf.Visitor;
 import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 
 public class Select extends UnaryOperator {
@@ -60,8 +61,8 @@ public class Select extends UnaryOperator {
     }
 
     @Override
-    protected Key lazyComputeKey() {
-        return Key.primary(AttrList.attrs(this.selection.gefns().keySet()));
+    protected Keys lazyComputeKey() {
+        return new Keys(Key.primary(AttrList.attrs(this.selection.gefns().keySet())));
     }
 
 }

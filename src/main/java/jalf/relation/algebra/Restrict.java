@@ -6,7 +6,7 @@ import java.util.List;
 import jalf.Predicate;
 import jalf.Relation;
 import jalf.Visitor;
-import jalf.constraint.Key;
+import jalf.constraint.Keys;
 import jalf.type.RelationType;
 
 /**
@@ -68,8 +68,8 @@ public class Restrict extends UnaryOperator {
      * @see jalf.relation.algebra.Operator#keyCheck()
      */
     @Override
-    protected Key lazyComputeKey() {
-        return this.operand.getKey();
+    protected Keys lazyComputeKey() {
+        return this.operand.getKeys();
     }
 
 }

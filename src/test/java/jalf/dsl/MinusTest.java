@@ -65,8 +65,8 @@ public class MinusTest {
                 );
         Relation actual = minus(left, right);
         //verif key
-        assertEquals(right.getKey(), left.getKey());
-        assertEquals(left.getKey(), actual.getKey());
+        assertEquals(right.getKeys().toList().get(0), left.getKeys().toList().get(0));
+        assertEquals(left.getKeys().toList().get(0), actual.getKeys().toList().get(0));
         // real test
         assertEquals(expected, actual);
 
@@ -93,8 +93,8 @@ public class MinusTest {
                 );
         Relation actual = minus(left, right);
         //verif key
-        assertNotEquals(right.getKey(), left.getKey());
-        assertEquals(left.getKey(), actual.getKey());
+        assertNotEquals(right.getKeys().toList().get(0), left.getKeys().toList().get(0));
+        assertEquals(left.getKeys().toList().get(0), actual.getKeys().toList().get(0));
 
 
         // real test
