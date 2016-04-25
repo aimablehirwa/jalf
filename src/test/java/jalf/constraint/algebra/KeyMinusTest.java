@@ -10,10 +10,8 @@ import static jalf.fixtures.SuppliersAndParts.NAME;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import jalf.AttrList;
 import jalf.Relation;
-import jalf.constraint.Key;
-import jalf.type.Heading;
+import jalf.constraint.Keys;
 
 import org.junit.Test;
 
@@ -39,13 +37,13 @@ public class KeyMinusTest {
 		tuple(attr("A"), "a3", attr("B"), "b1", attr("C"), "c2"));
 
 	Relation r = r1.minus(r2);
-	Key actual = r.getKeys().toList().get(0);
-	Key expected = key(attr("A"), attr("C"));
+	Keys actual = r.getKeys();
+	Keys expected = keys(key(attr("A"), attr("C")));
 	assertEquals(expected, actual);
 	// test if the header contain the key
-	Heading h = r.getType().getHeading();
-	AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	assertEquals(l,actual.toAttrList());
+	//Heading h = r.getType().getHeading();
+	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
+	//assertEquals(l,actual.toAttrList());
     }
 
 
@@ -71,8 +69,8 @@ public class KeyMinusTest {
 		);
 	Relation actual = minus(left, right);
 	//verif key
-	assertEquals(right.getKeys().toList().get(0), left.getKeys().toList().get(0));
-	assertEquals(left.getKeys().toList().get(0), actual.getKeys().toList().get(0));
+	assertEquals(right.getKeys(), left.getKeys());
+	assertEquals(left.getKeys(), actual.getKeys());
 	// real test
 	assertEquals(expected, actual);
 
@@ -99,9 +97,38 @@ public class KeyMinusTest {
 		);
 	Relation actual = minus(left, right);
 	//verif key
-	assertNotEquals(right.getKeys().toList().get(0), left.getKeys().toList().get(0));
-	assertEquals(left.getKeys().toList().get(0), actual.getKeys().toList().get(0));
+	assertNotEquals(right.getKeys(), left.getKeys());
+	assertEquals(left.getKeys(), actual.getKeys());
 
+	// real test
+	assertEquals(expected, actual);
+
+
+    }
+
+    @Test
+    public void testItWorksAsExpectedMultiKeys(){
+	Relation left = relation(
+		keys(key(SID), key(NAME)),
+		tuple(SID, "S1",NAME ,"Berth"),
+		tuple(SID, "S2",NAME ,"Max"),
+		tuple(SID, "S3",NAME ,"Tom"),
+		tuple(SID, "S4",NAME ,"Jojo")
+		);
+	Relation right = relation(
+		tuple(SID, "S2",NAME ,"Max"),
+		tuple(SID, "S3",NAME ,"Tom"),
+		tuple(SID, "S5",NAME ,"Leny")
+		);
+	Relation expected = relation(
+		keys(key(SID), key(NAME)),
+		tuple(SID, "S1",NAME ,"Berth"),
+		tuple(SID, "S4",NAME ,"Jojo")
+		);
+	Relation actual = minus(left, right);
+	//verif key
+	assertNotEquals(right.getKeys(), left.getKeys());
+	assertEquals(left.getKeys(), actual.getKeys());
 
 	// real test
 	assertEquals(expected, actual);
