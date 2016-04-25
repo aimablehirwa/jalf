@@ -83,7 +83,6 @@ public class DSL {
 	return Predicate.lte(left, right);
     }
 
-
     // Key
 
     public static Key key(AttrName... attrkey) {
@@ -105,6 +104,7 @@ public class DSL {
     public static Relation relation(RelationType type, Tuple... tuples) {
 	return SetMemoryRelation.tuples(type, tuples);
     }
+
     public static Relation relation(RelationType type, Key key, Tuple... tuples) {
 	return SetMemoryRelation.tuples(type, key, tuples);
     }
@@ -121,7 +121,7 @@ public class DSL {
 	return relation(RelationType.infer(Stream.of(tuples)), tuples);
     }
 
-    public static Relation relation(Key key, Tuple... tuples ) {
+    public static Relation relation(Key key, Tuple... tuples) {
 	return relation(RelationType.infer(Stream.of(tuples)), key, tuples);
     }
 
@@ -143,7 +143,8 @@ public class DSL {
 	return relation.restrict(predicate);
     }
 
-    public static Relation restrict(Relation relation, java.util.function.Predicate<Tuple> fn) {
+    public static Relation restrict(Relation relation,
+	    java.util.function.Predicate<Tuple> fn) {
 	return restrict(relation, Predicate.java(fn));
     }
 
