@@ -105,24 +105,24 @@ public class DSL {
 	return SetMemoryRelation.tuples(type, tuples);
     }
 
-    public static Relation relation(RelationType type, Key key, Tuple... tuples) {
-	return SetMemoryRelation.tuples(type, key, tuples);
+    public static Relation relation(RelationType type, Keys keys, Tuple... tuples) {
+	return SetMemoryRelation.tuples(type, keys, tuples);
     }
 
     public static Relation relation(Heading heading, Tuple... tuples) {
 	return relation(RelationType.dress(heading), tuples);
     }
 
-    public static Relation relation(Heading heading, Key key, Tuple... tuples) {
-	return relation(RelationType.dress(heading), key, tuples);
+    public static Relation relation(Heading heading, Keys keys, Tuple... tuples) {
+	return relation(RelationType.dress(heading), keys, tuples);
     }
 
     public static Relation relation(Tuple... tuples) {
 	return relation(RelationType.infer(Stream.of(tuples)), tuples);
     }
 
-    public static Relation relation(Key key, Tuple... tuples) {
-	return relation(RelationType.infer(Stream.of(tuples)), key, tuples);
+    public static Relation relation(Keys keys, Tuple... tuples) {
+	return relation(RelationType.infer(Stream.of(tuples)), keys, tuples);
     }
 
     // Relational algebra

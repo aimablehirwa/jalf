@@ -1,14 +1,6 @@
 package jalf.relation.materialized;
 
 import static jalf.util.CollectionUtils.setOf;
-
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collector;
-import java.util.stream.Stream;
-
 import jalf.Relation;
 import jalf.Tuple;
 import jalf.TypeException;
@@ -22,6 +14,13 @@ import jalf.type.RelationType;
 import jalf.type.TupleType;
 import jalf.util.CollectionUtils;
 
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Stream;
+
 /**
  * MemoryRelation where an actual set of tuples is used as internal
  * representation.
@@ -33,25 +32,25 @@ public class SetMemoryRelation extends MemoryRelation {
     private Collection<Tuple> tuples;
 
     //ici on précise la clef
-    public SetMemoryRelation(RelationType type, Set<Tuple> tuples, Key key) {
-        this.type = type;
-        this.tuples = tuples;
-        this.keys = new Keys(key);
-        if (!key.check(this))
-            throw new IllegalArgumentException("Invalid key!");
+    public SetMemoryRelation(RelationType type, Set<Tuple> tuples, Keys keys) {
+	this.type = type;
+	this.tuples = tuples;
+	this.keys = keys;
+	if (!keys.check(this))
+	    throw new IllegalArgumentException("Invalid key!");
     }
 
     //no key préciser tout les attributs deviennent la clef  de la relation
     public SetMemoryRelation(RelationType type, Set<Tuple> tuples) {
-        this(type, tuples, new Key(type.getHeading().toAttrList()));
+	this(type, tuples, new Keys(new Key(type.getHeading().toAttrList())));
     }
 
     public SetMemoryRelation(RelationType type, Tuple[] tuples) {
-        this(type, setOf(tuples));
+	this(type, setOf(tuples));
     }
 
-    public SetMemoryRelation(RelationType type, Tuple[] tuples, Key key) {
-        this(type, setOf(tuples),key);
+    public SetMemoryRelation(RelationType type, Tuple[] tuples, Keys keys) {
+	this(type, setOf(tuples), keys);
     }
 
     /**
@@ -67,87 +66,87 @@ public class SetMemoryRelation extends MemoryRelation {
      * @return the built Relation.
      */
     public static Relation tuples(RelationType type, Tuple...tuples) {
-        TupleType ttype = type.toTupleType();
-        Optional<Tuple> fail = Stream.of(tuples)
-                .filter(t -> !ttype.contains(t))
-                .findAny();
-        if (fail.isPresent()) {
-            Tuple t = fail.get();
-            throw new TypeException("Relation type mismatch: " + t);
-        } else {
-            return new SetMemoryRelation(type, tuples);
-        }
+	TupleType ttype = type.toTupleType();
+	Optional<Tuple> fail = Stream.of(tuples)
+		.filter(t -> !ttype.contains(t))
+		.findAny();
+	if (fail.isPresent()) {
+	    Tuple t = fail.get();
+	    throw new TypeException("Relation type mismatch: " + t);
+	} else {
+	    return new SetMemoryRelation(type, tuples);
+	}
     }
 
-    public static Relation tuples(RelationType type,Key key, Tuple...tuples) {
-        TupleType ttype = type.toTupleType();
-        Optional<Tuple> fail = Stream.of(tuples)
-                .filter(t -> !ttype.contains(t))
-                .findAny();
-        if (fail.isPresent()) {
-            Tuple t = fail.get();
-            throw new TypeException("Relation type mismatch: " + t);
-        } else {
-            return new SetMemoryRelation(type, tuples,key);
-        }
+    public static Relation tuples(RelationType type, Keys keys, Tuple...tuples) {
+	TupleType ttype = type.toTupleType();
+	Optional<Tuple> fail = Stream.of(tuples)
+		.filter(t -> !ttype.contains(t))
+		.findAny();
+	if (fail.isPresent()) {
+	    Tuple t = fail.get();
+	    throw new TypeException("Relation type mismatch: " + t);
+	} else {
+	    return new SetMemoryRelation(type, tuples, keys);
+	}
     }
 
     @Override
     public RelationType getType() {
-        return type;
+	return type;
     }
 
     @Override
     public Cog toCog(Compiler compiler) {
-        return new BaseCog(this, () -> tuples.stream());
+	return new BaseCog(this, () -> tuples.stream());
     }
 
     @Override
     public long cardinality() {
-        return tuples.size();
+	return tuples.size();
     }
 
     @Override
     public <R> R accept(Visitor<R> visitor) {
-        return visitor.visit(this);
+	return visitor.visit(this);
     }
 
     @Override
     public int hashCode(){
-        return tuples.hashCode();
+	return tuples.hashCode();
     }
 
     @Override
     public boolean equals(Relation other) {
-        if (!(other instanceof SetMemoryRelation))
-            other = other.stream().collect(SetMemoryRelation.collector(other.getType()));
-        return equals((SetMemoryRelation)other);
+	if (!(other instanceof SetMemoryRelation))
+	    other = other.stream().collect(SetMemoryRelation.collector(other.getType()));
+	return equals((SetMemoryRelation)other);
     }
 
     public boolean equals(SetMemoryRelation other) {
-        return tuples.equals(other.tuples);
+	return tuples.equals(other.tuples);
     }
 
     public static Collector<Tuple, ?, Relation> collector() {
-        return collector(null);
+	return collector(null);
     }
 
     public static Collector<Tuple, ?, Relation> collector(RelationType type) {
-        Function<Set<Tuple>, Relation> finisher = (tuples) -> {
-            if (type == null) {
-                RelationType type2 = RelationType.infer(tuples.stream());
-                return new SetMemoryRelation(type2, tuples);
-            } else {
-                return new SetMemoryRelation(type, tuples);
-            }
-        };
-        return Collector.of(
-                CollectionUtils::newConcurrentHashSet,
-                Set<Tuple>::add,
-                (left, right) -> { left.addAll(right); return left; },
-                finisher,
-                Collector.Characteristics.CONCURRENT,
-                Collector.Characteristics.UNORDERED);
+	Function<Set<Tuple>, Relation> finisher = (tuples) -> {
+	    if (type == null) {
+		RelationType type2 = RelationType.infer(tuples.stream());
+		return new SetMemoryRelation(type2, tuples);
+	    } else {
+		return new SetMemoryRelation(type, tuples);
+	    }
+	};
+	return Collector.of(
+		CollectionUtils::newConcurrentHashSet,
+		Set<Tuple>::add,
+		(left, right) -> { left.addAll(right); return left; },
+		finisher,
+		Collector.Characteristics.CONCURRENT,
+		Collector.Characteristics.UNORDERED);
     }
 
 }

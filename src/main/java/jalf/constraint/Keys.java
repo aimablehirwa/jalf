@@ -1,6 +1,7 @@
 package jalf.constraint;
 
 import static jalf.util.CollectionUtils.setOf;
+import jalf.Relation;
 import jalf.Renaming;
 
 import java.util.HashSet;
@@ -59,9 +60,9 @@ public class Keys implements Iterable<Key> {
     public String toString() {
 	return "keys("
 		+ keys.stream()
-			.flatMap(
-				a -> a.toAttrList().stream()
-					.map(b -> b.getName()))
+		.flatMap(
+			a -> a.toAttrList().stream()
+			.map(b -> b.getName()))
 			.collect(Collectors.joining(", ")) + ")";
 
     }
@@ -86,6 +87,10 @@ public class Keys implements Iterable<Key> {
 		    ;
 		});
 	return new Keys(keyunion);
+    }
+
+    public boolean check(Relation r){
+	return this.stream().allMatch(k -> k.check(r));
     }
 
 }
