@@ -34,10 +34,10 @@ import java.util.stream.Stream;
  * Cogs are the intermediate language used by JAlf when compiling relational
  * expressions. It is a middleware between logic expressions and streams
  * providing access to the list of tuples of a relation. Cogs implement stream
- * manipulation algorithms while also providing the compilation context in
- * terms of the source expression and actual compiler used. Also, unlike
- * Java streams, Cog may be consumed multiple times, thereby providing a real
- * reusable compilation result.
+ * manipulation algorithms while also providing the compilation context in terms
+ * of the source expression and actual compiler used. Also, unlike Java streams,
+ * Cog may be consumed multiple times, thereby providing a real reusable
+ * compilation result.
  *
  * This parent class implements the default compilation mechanism using Java
  * streams. It is intended to be subclassed for specific compilation schemes
@@ -45,160 +45,160 @@ import java.util.stream.Stream;
  */
 public abstract class Cog {
 
-	protected Relation expr;
+    protected Relation expr;
 
-	public Cog(Relation expr) {
-		super();
-		this.expr = expr;
+    public Cog(Relation expr) {
+	super();
+	this.expr = expr;
+    }
+
+    public Relation getExpr() {
+	return expr;
+    }
+
+    public abstract Stream<Tuple> stream();
+
+    public Cog select(Select relation) {
+	Selection selection = relation.getSelection();
+
+	Supplier<Stream<Tuple>> supplier = () -> this.stream()
+		.map(t -> selection.apply(t)).distinct();
+
+	return new BaseCog(relation, supplier);
+    }
+
+    /** Default compilation of `project`. */
+    public Cog project(Project projection) {
+	AttrList on = projection.getAttributes();
+	TupleType tt = projection.getTupleType();
+	Keys keys = projection.getOperand().getKeys();
+	// Key key = keys.toList().get(0);
+	Supplier<Stream<Tuple>> supplier;
+	// avoid duplicate
+	if (keys.stream().anyMatch((Key k) -> k.intersect(on).equals(k))) {
+	    // if (key.toAttrList().intersect(on).equals(key.toAttrList())){
+	    supplier = () -> this.stream().map(t -> t.project(on, tt));
+	} else {
+	    // stream compilation: map projection + distinct
+	    supplier = () -> this.stream().map(t -> t.project(on, tt))
+		    .distinct();
 	}
 
-	public Relation getExpr() {
-		return expr;
+	return new BaseCog(projection, supplier);
+    }
+
+    /** Default compilation of `rename`. */
+    public Cog rename(Rename rename) {
+	Renaming renaming = rename.getRenaming();
+	TupleType tt = rename.getTupleType();
+
+	// stream compilation: simple renaming
+	Supplier<Stream<Tuple>> supplier = () -> this.stream().map(
+		t -> t.rename(renaming, tt));
+
+	return new BaseCog(rename, supplier);
+    }
+
+    /** Default compilation of `restrict`. */
+    public Cog restrict(Restrict restrict) {
+	Predicate predicate = restrict.getPredicate();
+
+	// stream compilation: simple filtering
+	Supplier<Stream<Tuple>> supplier = () -> this.stream().filter(
+		t -> predicate.test(t));
+
+	return new BaseCog(restrict, supplier);
+    }
+
+    /** Default compilation of `join`. */
+    public Cog join(Join join, Cog right) {
+	AttrList on = join.getJoinAttrList();
+
+	if (on.isEmpty()) {
+	    return crossJoin(join, right);
+	} else {
+	    return hashJoin(join, right);
 	}
+    }
 
-	public abstract Stream<Tuple> stream();
+    /** Compiles a join with a nested loop */
+    private Cog crossJoin(Join join, Cog right) {
+	// get some info about the join to apply
+	final TupleType tt = join.getTupleType();
 
-	public Cog select(Select relation) {
-		Selection selection = relation.getSelection();
+	// build a supplier that does the cross join
+	Supplier<Stream<Tuple>> supplier = () -> {
+	    return this.stream().flatMap(
+		    leftTuple -> right.stream().map(
+			    rightTuple -> leftTuple.join(rightTuple, tt)));
+	};
+	return new BaseCog(join, supplier);
+    }
 
-		Supplier<Stream<Tuple>> supplier = () -> this.stream()
-				.map(t -> selection.apply(t))
-				.distinct();
+    private Cog hashJoin(Join join, Cog right) {
+	// get some info about the join to apply
+	final AttrList on = join.getJoinAttrList();
+	final TupleType tt = join.getTupleType();
 
-		return new BaseCog(relation, supplier);
-	}
+	// build a supplier that does the join
+	Supplier<Stream<Tuple>> supplier = () -> {
+	    Stream<Tuple> leftStream = this.stream();
+	    Stream<Tuple> rightStream = right.stream();
 
-	/** Default compilation of `project`. */
-	public Cog project(Project projection) {
-		AttrList on = projection.getAttributes();
-		TupleType tt = projection.getTupleType();
-		Keys keys = projection.getOperand().getKeys();
-		//Key key = keys.toList().get(0);
-		Supplier<Stream<Tuple>> supplier;
-		//avoid duplicate
-		if (keys.stream().anyMatch((Key k) -> k.intersect(on).equals(k))){
-			//if (key.toAttrList().intersect(on).equals(key.toAttrList())){
-			supplier = () -> this.stream()
-					.map(t -> t.project(on, tt));
-		}
-		else{
-			// stream compilation: map projection + distinct
-			supplier = () -> this.stream()
-					.map(t -> t.project(on, tt))
-					.distinct();
-		}
+	    // build an index on left tuples and do the hash join
+	    Map<Object, List<Tuple>> leftTuplesIndex = leftStream
+		    .collect(groupingBy(t -> t.fetch(on)));
+	    return rightStream.flatMap(rightTuple -> {
+		Object rightKey = rightTuple.fetch(on);
+		List<Tuple> leftTuples = leftTuplesIndex.getOrDefault(rightKey,
+			emptyList());
+		return leftTuples.stream().map(t -> t.join(rightTuple, tt));
+	    });
+	};
+	return new BaseCog(join, supplier);
+    }
 
-		return new BaseCog(projection, supplier);
-	}
+    /** Default compilation of `union`. */
+    public Cog union(Union union, Cog right) {
+	// stream compilation: concat + distinct
+	Supplier<Stream<Tuple>> supplier = () -> {
+	    Stream<Tuple> leftStream = this.stream();
+	    Stream<Tuple> rightStream = right.stream();
+	    return Stream.of(leftStream, rightStream).reduce(Stream::concat)
+		    .orElse(Stream.empty()).distinct();
+	};
+	return new BaseCog(union, supplier);
+    }
 
-	/** Default compilation of `rename`. */
-	public Cog rename(Rename rename) {
-		Renaming renaming = rename.getRenaming();
-		TupleType tt = rename.getTupleType();
+    /** Default compilation of `intersect`. */
+    public Cog intersect(Intersect intersect, Cog right) {
+	// stream compilation: concat + distinct
 
-		// stream compilation: simple renaming
-		Supplier<Stream<Tuple>> supplier = () -> this.stream()
-				.map(t -> t.rename(renaming, tt));
+	Supplier<Stream<Tuple>> supplier = () -> {
+	    Stream<Tuple> leftStream = this.stream();
+	    Stream<Tuple> rightStream = right.stream();
+	    Set<Tuple> leftHashSet = leftStream.collect(Collectors
+		    .toCollection(HashSet::new));
+	    Stream<Tuple> intersectStream = rightStream.filter(x -> leftHashSet
+		    .contains(x));
+	    return intersectStream;
 
-		return new BaseCog(rename, supplier);
-	}
+	};
+	return new BaseCog(intersect, supplier);
+    }
 
-	/** Default compilation of `restrict`. */
-	public Cog restrict(Restrict restrict) {
-		Predicate predicate = restrict.getPredicate();
-
-		// stream compilation: simple filtering
-		Supplier<Stream<Tuple>> supplier = () -> this.stream()
-				.filter(t -> predicate.test(t));
-
-		return new BaseCog(restrict, supplier);
-	}
-
-	/** Default compilation of `join`. */
-	public Cog join(Join join, Cog right) {
-		AttrList on = join.getJoinAttrList();
-
-		if (on.isEmpty()) {
-			return crossJoin(join, right);
-		} else {
-			return hashJoin(join, right);
-		}
-	}
-
-	/** Compiles a join with a nested loop */
-	private Cog crossJoin(Join join, Cog right) {
-		// get some info about the join to apply
-		final TupleType tt = join.getTupleType();
-
-		// build a supplier that does the cross join
-		Supplier<Stream<Tuple>> supplier = () -> {
-			return this.stream().flatMap(leftTuple -> right.stream()
-					.map(rightTuple -> leftTuple.join(rightTuple, tt)));
-		};
-		return new BaseCog(join, supplier);
-	}
-
-	private Cog hashJoin(Join join, Cog right) {
-		// get some info about the join to apply
-		final AttrList on = join.getJoinAttrList();
-		final TupleType tt = join.getTupleType();
-
-		// build a supplier that does the join
-		Supplier<Stream<Tuple>> supplier = () -> {
-			Stream<Tuple> leftStream = this.stream();
-			Stream<Tuple> rightStream = right.stream();
-
-			// build an index on left tuples and do the hash join
-			Map<Object, List<Tuple>> leftTuplesIndex = leftStream.collect(groupingBy(t -> t.fetch(on)));
-			return rightStream.flatMap(rightTuple -> {
-				Object rightKey = rightTuple.fetch(on);
-				List<Tuple> leftTuples = leftTuplesIndex.getOrDefault(rightKey, emptyList());
-				return leftTuples.stream().map(t -> t.join(rightTuple, tt));
-			});
-		};
-		return new BaseCog(join, supplier);
-	}
-
-	/** Default compilation of `union`. */
-	public Cog union(Union union, Cog right) {
-		// stream compilation: concat + distinct
-		Supplier<Stream<Tuple>> supplier = () ->{
-			Stream<Tuple> leftStream = this.stream();
-			Stream<Tuple> rightStream = right.stream();
-			return Stream.of(leftStream,rightStream)
-					.reduce(Stream::concat)
-					.orElse(Stream.empty())
-					.distinct();
-		};
-		return new BaseCog(union, supplier);
-	}
-	/** Default compilation of `intersect`. */
-	public Cog intersect(Intersect intersect, Cog right) {
-		// stream compilation: concat + distinct
-
-		Supplier<Stream<Tuple>> supplier = () ->{
-			Stream<Tuple> leftStream = this.stream();
-			Stream<Tuple> rightStream = right.stream();
-			Set<Tuple> leftHashSet = leftStream.collect(Collectors.toCollection(HashSet::new));
-			Stream<Tuple>intersectStream =rightStream
-					.filter(x -> leftHashSet.contains(x));
-			return intersectStream ;
-
-		};
-		return new BaseCog(intersect, supplier);
-	}
-
-	/** Default compilation of `minus`. */
-	public Cog minus(Minus minus, Cog right) {
-		Supplier<Stream<Tuple>> supplier = () ->{
-			Stream<Tuple> leftStream = this.stream();
-			Stream<Tuple> rightStream = right.stream();
-			Set<Tuple> rightHashSet = rightStream.collect(Collectors.toCollection(HashSet::new));
-			Stream<Tuple> minusStream = leftStream
-					.filter(x -> !rightHashSet.contains(x));
-			return minusStream;
-		};
-		return new BaseCog(minus, supplier);
-	}
+    /** Default compilation of `minus`. */
+    public Cog minus(Minus minus, Cog right) {
+	Supplier<Stream<Tuple>> supplier = () -> {
+	    Stream<Tuple> leftStream = this.stream();
+	    Stream<Tuple> rightStream = right.stream();
+	    Set<Tuple> rightHashSet = rightStream.collect(Collectors
+		    .toCollection(HashSet::new));
+	    Stream<Tuple> minusStream = leftStream.filter(x -> !rightHashSet
+		    .contains(x));
+	    return minusStream;
+	};
+	return new BaseCog(minus, supplier);
+    }
 
 }

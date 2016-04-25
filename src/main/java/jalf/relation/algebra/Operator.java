@@ -14,32 +14,31 @@ import java.util.List;
  */
 public abstract class Operator extends AbstractRelation {
 
-	protected Keys keys;
+    protected Keys keys;
 
-	protected abstract Keys lazyComputeKey();
+    protected abstract Keys lazyComputeKey();
 
-	protected abstract RelationType typeCheck();
+    protected abstract RelationType typeCheck();
 
-	public abstract List<Relation> getOperands();
+    public abstract List<Relation> getOperands();
 
-	public abstract List<Object> getArguments();
+    public abstract List<Object> getArguments();
 
-	@Override
-	public Keys getKeys() {
-		if (this.keys == null) {
-			this.keys = this.lazyComputeKey();
-		}
-		return this.keys;
+    @Override
+    public Keys getKeys() {
+	if (this.keys == null) {
+	    this.keys = this.lazyComputeKey();
 	}
+	return this.keys;
+    }
 
-	@Override
-	public boolean equals(Relation other) {
-		if (other instanceof MemoryRelation)
-			return other.equals(this);
-		else
-			return stream()
-					.collect(MemoryRelation.collector(getType()))
-					.equals(other);
-	}
+    @Override
+    public boolean equals(Relation other) {
+	if (other instanceof MemoryRelation)
+	    return other.equals(this);
+	else
+	    return stream().collect(MemoryRelation.collector(getType()))
+		    .equals(other);
+    }
 
 }
