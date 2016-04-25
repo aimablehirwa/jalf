@@ -15,7 +15,7 @@ public class Key  implements Constraint{
         this.attrsKey=attrsKey;
     }
 
-    public  static Key primary(AttrList attrsKey) {
+    public  static Key candidate(AttrList attrsKey) {
         return new Key(attrsKey);
     }
 
@@ -31,6 +31,10 @@ public class Key  implements Constraint{
     public Key union(Key other) {
         AttrList newkey=  this.attrsKey.union(other.attrsKey);
         return new Key(newkey);
+    }
+    
+    public AttrList intersect(AttrList other){
+    	return this.attrsKey.intersect(other);
     }
 
     @Override

@@ -79,15 +79,15 @@ public class Project extends UnaryOperator {
     public Keys lazyComputeKey(){
         Keys keys=operand.getKeys();
 
-        Predicate<Key> P= (k)-> k.toAttrList().intersect(this.attributes).equals(k.toAttrList());
+        Predicate<Key> P= (k)-> k.intersect(this.attributes).equals(k.toAttrList());
         Set<Key> keyfilter=keys.stream().filter(P).collect(Collectors.toSet());
         if( keyfilter.isEmpty()){
-            //aucune clef est bonne
-            return  new Keys(Key.primary(this.attributes));
+            // no key is good
+            return  new Keys(Key.candidate(this.attributes));
         }
         else{
             //on a filtrer les mauvaises clefs
-            return  new Keys(keyfilter);
+            return new Keys(keyfilter);
         }
     }
 
