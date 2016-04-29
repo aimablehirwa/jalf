@@ -34,12 +34,8 @@ public class KeyIntersectTest {
 
 	Relation r = r1.intersect(r2);
 	Keys actual = r.getKeys();
-	Keys expected = keys(key(attr("A"), attr("B"), attr("C")));
+	Keys expected = keys(key(attr("A"), attr("C")), key(attr("A"), attr("B")));
 	assertEquals(expected, actual);
-	// test if the header contain the key
-	//Heading h = r.getType().getHeading();
-	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	//assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -64,12 +60,9 @@ public class KeyIntersectTest {
 
 	Relation r = r1.intersect(r2);
 	Keys actual = r.getKeys();
-	Keys expected = keys(key(attr("A"), attr("B"), attr("C")), key(attr("A"), attr("B")));
+	Keys expected = keys(key(attr("A"), attr("C")), key(attr("B")), key(attr("A"), attr("B")));
 	assertEquals(expected, actual);
-	// test if the header contain the key
-	//Heading h = r.getType().getHeading();
-	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	//assertEquals(l,actual.toAttrList());
+
     }
 
 }

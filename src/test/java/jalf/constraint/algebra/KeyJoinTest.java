@@ -35,10 +35,6 @@ public class KeyJoinTest {
 	Keys actual = r.getKeys();
 	Keys expected = keys(key(attr("A"), attr("C"), attr("D"), attr("E")));
 	assertEquals(expected, actual);
-	// test if the header contain the key
-	//Heading h = r.getType().getHeading();
-	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	//assertEquals(l,actual.toAttrList());
     }
 
     @Test
@@ -64,10 +60,6 @@ public class KeyJoinTest {
 	Keys actual = r.getKeys();
 	Keys expected = keys(key(attr("A"), attr("C"), attr("D"), attr("E")), key(attr("B"), attr("D"), attr("E")));
 	assertEquals(expected, actual);
-	// test if the header contain the key
-	//Heading h = r.getType().getHeading();
-	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	//assertEquals(l,actual.toAttrList());
     }
 
 }

@@ -1,13 +1,13 @@
 package jalf.relation.algebra;
 
-import java.util.Arrays;
-import java.util.List;
-
 import jalf.AttrList;
 import jalf.Relation;
 import jalf.Visitor;
 import jalf.constraint.Keys;
 import jalf.type.RelationType;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Union extends BinaryOperator{
 
@@ -19,30 +19,30 @@ public class Union extends BinaryOperator{
 
 
     public Union(RelationType type, Relation left, Relation right) {
-        this.left = left;
-        this.right = right;
-        this.type = type;
+	this.left = left;
+	this.right = right;
+	this.type = type;
     }
 
     public Union(Relation left, Relation right){
-        this.left = left;
-        this.right = right;
-        this.type = typeCheck();
+	this.left = left;
+	this.right = right;
+	this.type = typeCheck();
     }
 
     @Override
     public RelationType getType() {
-        return type;
+	return type;
     }
 
     @Override
     public Relation getLeft() {
-        return left;
+	return left;
     }
 
     @Override
     public Relation getRight() {
-        return right;
+	return right;
     }
 
     /**
@@ -50,29 +50,29 @@ public class Union extends BinaryOperator{
      * @return left attributes as an AttrList instance.
      */
     public AttrList getUnionAttrList() {
-        AttrList leftAttrs = left.getType().toAttrList();
-        return leftAttrs;
+	AttrList leftAttrs = left.getType().toAttrList();
+	return leftAttrs;
     }
 
     @Override
     protected RelationType typeCheck() {
-        return left.getType().union(right.getType());
+	return left.getType().union(right.getType());
     }
 
     @Override
     public List<Object> getArguments() {
-        return Arrays.asList();
+	return Arrays.asList();
     }
 
     @Override
     public <R> R accept(Visitor<R> visitor) {
-        return visitor.visit(this);
+	return visitor.visit(this);
     }
 
 
     @Override
     protected Keys lazyComputeKey() {
-        return left.getKeys().union(right.getKeys());
+	return new Keys(this.getLargestKey());
     }
 
 }

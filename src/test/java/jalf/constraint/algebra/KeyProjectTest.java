@@ -4,6 +4,7 @@ import static jalf.DSL.attr;
 import static jalf.DSL.attrs;
 import static jalf.DSL.key;
 import static jalf.DSL.keys;
+import static jalf.DSL.project;
 import static jalf.DSL.relation;
 import static jalf.DSL.tuple;
 import static jalf.fixtures.SuppliersAndParts.PID;
@@ -21,36 +22,28 @@ public class KeyProjectTest {
 
     @Test
     public void testProjectOperatorWithKey1(){
-	// test Ps intersect Kx = null : Kn = on
+	// test if intersect(on, k) = null then newkey = on
 	Relation r = shipments();
-	Relation p = r.project(attrs(QTY));
+	Relation p = project(r, attrs(QTY));
 	Keys actual = p.getKeys();
 	Keys expected = keys(key(QTY));
 	assertEquals(expected, actual);
-	// test if the header contain the key
-	//Heading h = p.getType().getHeading();
-	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	//assertEquals(l,actual.toAttrList());
     }
 
     @Test
     public void testProjectOperatorWithKey2(){
-	// test Ps intersect Kx = Psx : Kn = on
+	// test if intersect(on, k) = between[on and k] then newkey = on
 	// the new key must be the projected attributes
 	Relation r = shipments();
 	Relation p = r.project(attrs(SID, QTY));
 	Keys actual = p.getKeys();
 	Keys expected = keys(key(SID, QTY));
 	assertEquals(expected, actual);
-	// test if the header contain the key
-	//Heading h = p.getType().getHeading();
-	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	//assertEquals(l,actual.toAttrList());
     }
 
     @Test
     public void testProjectOperatorWithKey3(){
-	// test Ps intersect Ks = Ks : Kn = Ks
+	// test if intersect(on, k) = k then newkey = k
 	// the key and the projected attributes are the same,
 	// so the key of the projection is the key of r
 	Relation r = shipments();
@@ -58,15 +51,11 @@ public class KeyProjectTest {
 	Keys actual = p.getKeys();
 	Keys expected = keys(key(SID, PID));
 	assertEquals(expected, actual);
-	// test if the header contain the key
-	//Heading h = p.getType().getHeading();
-	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	//assertEquals(l,actual.toAttrList());
     }
 
     @Test
     public void testProjectOperatorWithKey4(){
-	// test Ps intersect Ks = Ps : Kn = on
+	// test if intersect(on, k) = on then newkey = on
 	// the key and the projected attributes are the same,
 	// so the key of the projection is the key of r
 	Relation r = shipments();
@@ -74,15 +63,11 @@ public class KeyProjectTest {
 	Keys actual = p.getKeys();
 	Keys expected = keys(key(SID));
 	assertEquals(expected, actual);
-	// test if the header contain the key
-	//Heading h = p.getType().getHeading();
-	//AttrList l =  h.toAttrList().intersect(actual.toAttrList());
-	//assertEquals(l,actual.toAttrList());
     }
 
     @Test
     public void testProjectOperatorWithMultiKey(){
-	// test Ps intersect Ks = Ks : Kn = Ks
+	// test if intersect(on, k) = k then newkey = k
 	Relation r = relation(
 		keys(key(attr("A"), attr("C")), key(attr("B"))),
 		tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1"),
@@ -99,7 +84,7 @@ public class KeyProjectTest {
 
     @Test
     public void testProjectOperatorWithMultiKey2(){
-	// test Ps intersect Ks = Ks : Kn = Ks
+	// test if intersect(on, k) = k then newkey = k
 	Relation r = relation(
 		keys(key(attr("A"), attr("C")), key(attr("B")), key(attr("D"))),
 		tuple(attr("A"), "a1", attr("B"), "b1", attr("C"), "c1", attr("D"), "d1"),

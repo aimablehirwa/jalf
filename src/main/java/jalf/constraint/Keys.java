@@ -15,6 +15,8 @@ public class Keys implements Iterable<Key> {
 
     private Set<Key> keys;
 
+    public static final Keys EMPTY = new Keys(Key.EMPTY);
+
     public Keys(Set<Key> keys) {
 	this.keys = keys;
     }
@@ -60,10 +62,8 @@ public class Keys implements Iterable<Key> {
     public String toString() {
 	return "keys("
 		+ keys.stream()
-		.flatMap(
-			a -> a.toAttrList().stream()
-			.map(b -> b.getName()))
-			.collect(Collectors.joining(", ")) + ")";
+		.map(k -> k.toString())
+		.collect(Collectors.joining(", ")) + ")\n";
 
     }
 
@@ -77,7 +77,7 @@ public class Keys implements Iterable<Key> {
 	return keys.stream().collect(Collectors.toList());
     }
 
-    public Keys union(Keys other) {
+    public Keys complexUnion(Keys other) {
 	Set<Key> keyunion = new HashSet<Key>();
 	this.stream().forEach(
 		(k) -> {
@@ -86,6 +86,13 @@ public class Keys implements Iterable<Key> {
 		    keyunion.addAll(newset);
 		    ;
 		});
+	return new Keys(keyunion);
+    }
+
+    public Keys simpleUnion(Keys other){
+	Set<Key> keyunion = new HashSet<Key>();
+	keyunion.addAll(this.keys);
+	keyunion.addAll(other.keys);
 	return new Keys(keyunion);
     }
 

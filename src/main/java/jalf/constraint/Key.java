@@ -4,6 +4,8 @@ import jalf.AttrList;
 import jalf.Relation;
 import jalf.Renaming;
 
+import java.util.stream.Collectors;
+
 public class Key  implements Constraint{
 
     public static final Key EMPTY = new Key(AttrList.EMPTY);
@@ -33,8 +35,8 @@ public class Key  implements Constraint{
 	return new Key(newkey);
     }
 
-    public AttrList intersect(AttrList other){
-	return this.attrsKey.intersect(other);
+    public boolean include(AttrList other){
+	return this.attrsKey.intersect(other).equals(this.toAttrList());
     }
 
     @Override
@@ -60,11 +62,21 @@ public class Key  implements Constraint{
 	if (intersect.equals(this.attrsKey)){
 	    // deuxieme vérification sur la cardinality apres projection
 	    // sur la clef
-	    return(r.project(this.attrsKey).cardinality() == r.cardinality());
+	    return (r.project(this.attrsKey).cardinality() == r.cardinality());
 	}
 	else{
 	    return false;
 	}
+    }
+
+    @Override
+    public String toString(){
+	String s = "key( ";
+	s += this.attrsKey.stream()
+		.map(a -> a.getName())
+		.collect(Collectors.joining(", "));
+	s += ")";
+	return s;
     }
 
     public boolean contains(AttrList l){

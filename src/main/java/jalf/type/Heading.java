@@ -8,6 +8,7 @@ import jalf.AttrName;
 import jalf.Renaming;
 import jalf.Type;
 import jalf.TypeException;
+import jalf.constraint.Key;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,7 +28,7 @@ public class Heading {
     private Map<AttrName, Type<?>> attributes;
 
     public Heading(Map<AttrName, Type<?>> attributes) {
-        this.attributes = attributes;
+	this.attributes = attributes;
     }
 
     /**
@@ -39,16 +40,16 @@ public class Heading {
      * @return factored heading.
      */
     public static Heading dress(Object... nameTypePairs) {
-        validateNotNull("Parameter 'keyValuePairs' must be non-null.", nameTypePairs);
-        validate("Length of key-value pairs must be even.", nameTypePairs.length % 2, 0);
+	validateNotNull("Parameter 'keyValuePairs' must be non-null.", nameTypePairs);
+	validate("Length of key-value pairs must be even.", nameTypePairs.length % 2, 0);
 
-        Map<AttrName, Type<?>> attrs = new LinkedHashMap<>();
-        for (int i = 0; i < nameTypePairs.length; i++) {
-            AttrName attr = AttrName.dress(nameTypePairs[i++]);
-            Type<?> type = Type.dress(nameTypePairs[i]);
-            attrs.put(attr, type);
-        }
-        return new Heading(attrs);
+	Map<AttrName, Type<?>> attrs = new LinkedHashMap<>();
+	for (int i = 0; i < nameTypePairs.length; i++) {
+	    AttrName attr = AttrName.dress(nameTypePairs[i++]);
+	    Type<?> type = Type.dress(nameTypePairs[i]);
+	    attrs.put(attr, type);
+	}
+	return new Heading(attrs);
     }
 
     /**
@@ -60,14 +61,14 @@ public class Heading {
      * @return a Heading instance `{ name : fn(name) }` for every name.
      */
     public static Heading dress(AttrName[] attrNames, Function<AttrName, Type<?>> fn) {
-        validateNotNull("Parameter 'attrNames' must be non-null", attrNames);
-        validateNotNull("Parameter 'fn' must be non-null", fn);
+	validateNotNull("Parameter 'attrNames' must be non-null", attrNames);
+	validateNotNull("Parameter 'fn' must be non-null", fn);
 
-        Map<AttrName, Type<?>> attributes = new LinkedHashMap<>();
-        for (AttrName attrName : attrNames) {
-            attributes.put(attrName, fn.apply(attrName));
-        }
-        return new Heading(attributes);
+	Map<AttrName, Type<?>> attributes = new LinkedHashMap<>();
+	for (AttrName attrName : attrNames) {
+	    attributes.put(attrName, fn.apply(attrName));
+	}
+	return new Heading(attributes);
     }
 
     /**
@@ -78,12 +79,12 @@ public class Heading {
      * @return a Heading instance.
      */
     public static Heading infer(Map<AttrName, Object> nameValuePairs) {
-        Map<AttrName, Type<?>> attributes = new LinkedHashMap<>();
-        nameValuePairs.forEach((attr, value) -> {
-            Type<?> type = Type.infer(value);
-            attributes.put(attr, type);
-        });
-        return new Heading(attributes);
+	Map<AttrName, Type<?>> attributes = new LinkedHashMap<>();
+	nameValuePairs.forEach((attr, value) -> {
+	    Type<?> type = Type.infer(value);
+	    attributes.put(attr, type);
+	});
+	return new Heading(attributes);
     }
 
     /**
@@ -100,23 +101,23 @@ public class Heading {
      * no least common super type exists for one of them.
      */
     public static Heading leastCommonSuperHeading(Heading h1, Heading h2) throws TypeException {
-        Map<AttrName, Type<?>> left =  h1.attributes;
-        Set<AttrName> leftAttrs = left.keySet();
-        Map<AttrName, Type<?>> right = h2.attributes;
-        Set<AttrName> rightAttrs = right.keySet();
+	Map<AttrName, Type<?>> left =  h1.attributes;
+	Set<AttrName> leftAttrs = left.keySet();
+	Map<AttrName, Type<?>> right = h2.attributes;
+	Set<AttrName> rightAttrs = right.keySet();
 
-        // TODO: is there a stream-minded way of doing this merge?
-        if (leftAttrs.equals(rightAttrs)) {
-            Map<AttrName, Type<?>> result = new HashMap<>();
-            left.forEach((attr, leftType) -> {
-                Type<?> rightType = right.get(attr);
-                Type<?> least = Type.leastCommonSupertype(leftType, rightType);
-                result.put(attr, least);
-            });
-            return new Heading(result);
-        } else {
-            throw new TypeException("Headings must have same attributes");
-        }
+	// TODO: is there a stream-minded way of doing this merge?
+	if (leftAttrs.equals(rightAttrs)) {
+	    Map<AttrName, Type<?>> result = new HashMap<>();
+	    left.forEach((attr, leftType) -> {
+		Type<?> rightType = right.get(attr);
+		Type<?> least = Type.leastCommonSupertype(leftType, rightType);
+		result.put(attr, least);
+	    });
+	    return new Heading(result);
+	} else {
+	    throw new TypeException("Headings must have same attributes");
+	}
     }
 
     /**
@@ -126,7 +127,7 @@ public class Heading {
      * @return the type associated to `attrName`, or null.
      */
     public Type<?> getTypeOf(AttrName attrName) {
-        return attributes.get(attrName);
+	return attributes.get(attrName);
     }
 
     /**
@@ -136,7 +137,7 @@ public class Heading {
      * @return an attribute list.
      */
     public AttrList toAttrList() {
-        return AttrList.attrs(this.attributes.keySet());
+	return AttrList.attrs(this.attributes.keySet());
     }
 
     /**
@@ -147,12 +148,12 @@ public class Heading {
      * @return the heading obtained by keeping only attributes in `on`.
      */
     public Heading project(AttrList on) {
-        Map<AttrName, Type<?>> projected = new HashMap<>();
-        attributes.forEach((name, type) -> {
-            if (on.contains(name))
-                projected.put(name, type);
-        });
-        return new Heading(projected);
+	Map<AttrName, Type<?>> projected = new HashMap<>();
+	attributes.forEach((name, type) -> {
+	    if (on.contains(name))
+		projected.put(name, type);
+	});
+	return new Heading(projected);
     }
 
     /**
@@ -163,7 +164,7 @@ public class Heading {
      * @return the heading obtained by renaming the attributes.
      */
     public Heading rename(Renaming renaming) {
-        return new Heading(rekey(attributes, (k,v) -> renaming.apply(k)));
+	return new Heading(rekey(attributes, (k,v) -> renaming.apply(k)));
     }
 
     /**
@@ -175,32 +176,40 @@ public class Heading {
      * @return the joined heading.
      */
     public Heading join(Heading other) {
-        Map<AttrName, Type<?>> joined =  new LinkedHashMap<>(this.attributes);
-        other.attributes.forEach((name, rightType) -> {
-            Type<?> leftType = joined.get(name);
-            if (leftType != null) {
-                Type<?> lcst = Type.leastCommonSupertype(leftType, rightType);
-                joined.put(name, lcst);
-            } else {
-                joined.put(name, rightType);
-            }
-        });
-        return new Heading(joined);
+	Map<AttrName, Type<?>> joined =  new LinkedHashMap<>(this.attributes);
+	other.attributes.forEach((name, rightType) -> {
+	    Type<?> leftType = joined.get(name);
+	    if (leftType != null) {
+		Type<?> lcst = Type.leastCommonSupertype(leftType, rightType);
+		joined.put(name, lcst);
+	    } else {
+		joined.put(name, rightType);
+	    }
+	});
+	return new Heading(joined);
+    }
+
+    /**
+     * Get key with the all header attributes
+     * @return
+     */
+    public Key toKey(){
+	return new Key(this.toAttrList());
     }
 
     @Override
     public int hashCode() {
-        return attributes.hashCode();
+	return attributes.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this)
-            return true;
-        if (obj == null || !(obj instanceof Heading))
-            return false;
-        Heading other = (Heading) obj;
-        return attributes.equals(other.attributes);
+	if (obj == this)
+	    return true;
+	if (obj == null || !(obj instanceof Heading))
+	    return false;
+	Heading other = (Heading) obj;
+	return attributes.equals(other.attributes);
     }
 
 }

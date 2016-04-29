@@ -1,14 +1,12 @@
 package jalf.compiler;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import jalf.AttrList;
 import jalf.Predicate;
 import jalf.Relation;
 import jalf.Renaming;
 import jalf.Selection;
 import jalf.Tuple;
+import jalf.constraint.Key;
 import jalf.relation.algebra.Intersect;
 import jalf.relation.algebra.Join;
 import jalf.relation.algebra.Minus;
@@ -18,6 +16,9 @@ import jalf.relation.algebra.Restrict;
 import jalf.relation.algebra.Select;
 import jalf.relation.algebra.Union;
 import jalf.type.TupleType;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Parent (abstract) class of all relation implementations.
@@ -33,69 +34,72 @@ public abstract class AbstractRelation implements Relation {
 
     @Override
     public TupleType getTupleType() {
-        if (tupleType == null) {
-            tupleType = getType().toTupleType();
-        }
-        return tupleType;
+	if (tupleType == null) {
+	    tupleType = getType().toTupleType();
+	}
+	return tupleType;
     }
 
     @Override
     public Relation select(Selection selection) {
-        return new Select(this, selection);
+	return new Select(this, selection);
     }
 
     @Override
     public Relation project(AttrList attributes) {
-        return new Project(this, attributes);
+	return new Project(this, attributes);
     }
 
     @Override
     public Relation rename(Renaming renaming) {
-        return new Rename(this, renaming);
+	return new Rename(this, renaming);
     }
 
     @Override
     public Relation restrict(Predicate predicate) {
-        return new Restrict(this, predicate);
+	return new Restrict(this, predicate);
     }
 
     @Override
     public Relation join(Relation right) {
-        return new Join(this, right);
+	return new Join(this, right);
     }
 
     @Override
     public Relation union(Relation right) {
-        return new Union(this, right);
+	return new Union(this, right);
     }
 
     @Override
     public Relation intersect(Relation right){
-        return new Intersect(this, right);
+	return new Intersect(this, right);
     }
 
     @Override
     public Relation minus(Relation right) {
-        return new Minus(this, right);
+	return new Minus(this, right);
     }
 
     ///
 
     @Override
     public Stream<Tuple> stream() {
-        return compile().stream();
+	return compile().stream();
     }
 
     @Override
     public long cardinality() {
-        return stream().count();
+	return stream().count();
     }
 
+    public Key getLargestKey(){
+	return this.getType().getLargestKey();
+    }
 
     ///
 
     private Cog compile() {
-        return accept(new Compiler());
+	return accept(new Compiler());
     }
 
     ///
@@ -127,23 +131,23 @@ public abstract class AbstractRelation implements Relation {
      */
     @Override
     public boolean equals(Object other) {
-        if (other == this)
-            return true;
-        if (other == null || !(other instanceof Relation))
-            return false;
-        return equals((Relation) other);
+	if (other == this)
+	    return true;
+	if (other == null || !(other instanceof Relation))
+	    return false;
+	return equals((Relation) other);
     }
 
     public abstract boolean equals(Relation other);
 
     @Override
     public String toString() {
-        String s = "relation(\n  ";
-        s += stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(",\n  "));
-        s += "\n)";
-        return s;
+	String s = "relation(\n  ";
+	s += stream()
+		.map(Object::toString)
+		.collect(Collectors.joining(",\n  "));
+	s += "\n)";
+	return s;
     }
 
 }
