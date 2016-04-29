@@ -106,7 +106,7 @@ public class Project extends UnaryOperator {
     }
 
     public boolean isKeyPreserving(Key key){
-	return key.include(this.attributes);
+	return key.isSubSetOf(this.attributes);
     }
 
 }

@@ -9,7 +9,9 @@ import static jalf.fixtures.SuppliersAndParts.PID;
 import static jalf.fixtures.SuppliersAndParts.QTY;
 import static jalf.fixtures.SuppliersAndParts.SID;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import jalf.Renaming;
 
 import org.junit.Test;
@@ -52,7 +54,7 @@ public class KeysTest {
      */
     @Test
     public void testareKeysValidTrue(){
-	Keys k = keys(key(attr("C"), PID), key(SID,PID, QTY));
+	Keys k = keys(key(attr("C"), PID), key(SID, PID, QTY));
 	assertTrue(k.areKeysValid());
     }
 
@@ -61,7 +63,13 @@ public class KeysTest {
      */
     @Test
     public void testareKeysValidFalse(){
-	Keys k = keys(key(SID, PID), key(SID,PID, QTY));
+	Keys k = keys(key(SID, PID), key(SID, PID, QTY));
+	assertFalse(k.areKeysValid());
+    }
+
+    @Test
+    public void testareKeysValidFalse2(){
+	Keys k = keys(key(SID, PID, QTY), key(SID));
 	assertFalse(k.areKeysValid());
     }
 

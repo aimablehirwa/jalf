@@ -35,8 +35,20 @@ public class Key  implements Constraint{
 	return new Key(newkey);
     }
 
-    public boolean include(AttrList other){
+    public boolean isSuperKey(Key k){
+	return this.isSuperSet(k.toAttrList());
+    }
+
+    public boolean isSubKey(Key k){
+	return this.isSubSetOf(k.toAttrList());
+    }
+
+    public boolean isSubSetOf(AttrList other){
 	return this.attrsKey.intersect(other).equals(this.toAttrList());
+    }
+
+    public boolean isSuperSet(AttrList l){
+	return this.attrsKey.intersect(l).equals(l);
     }
 
     @Override
@@ -79,8 +91,5 @@ public class Key  implements Constraint{
 	return s;
     }
 
-    public boolean contains(AttrList l){
-	return this.attrsKey.intersect(l).equals(l);
-    }
 
 }

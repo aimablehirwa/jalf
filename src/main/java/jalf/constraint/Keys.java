@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -97,7 +98,20 @@ public class Keys implements Iterable<Key> {
     }
 
     public boolean check(Relation r){
-	return this.stream().allMatch(k -> k.check(r));
+	return this.stream().allMatch(k -> k.check(r)) && this.areKeysValid();
+    }
+
+    /**
+     * return false if there is a super key of another key
+     * @return
+     */
+    public boolean areKeysValid(){
+	Stream<Key> comp = this.stream();
+	Set<Key> comp1 = this.keys;
+	return comp.anyMatch(k -> {
+	    Predicate<Key> p = (k1) -> (!k1.equals(k)) && (k1.isSubKey(k) || k1.isSuperKey(k));
+	    return (comp1.stream().anyMatch(p))? false:true;
+	});
     }
 
 }
