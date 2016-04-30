@@ -125,6 +125,7 @@ public class Optimized<R extends Relation> extends AbstractRelation {
         throw new UnsupportedOperationException();
     }
 
+
     @Override
     public Keys getKeys() {
         return operator.getKeys();
