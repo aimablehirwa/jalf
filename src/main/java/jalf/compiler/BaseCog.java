@@ -1,10 +1,10 @@
 package jalf.compiler;
 
-import jalf.Relation;
-import jalf.Tuple;
-
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import jalf.Relation;
+import jalf.Tuple;
 
 public class BaseCog extends Cog {
 
@@ -15,6 +15,7 @@ public class BaseCog extends Cog {
         this.streamSupplier = streamSupplier;
     }
 
+    @Override
     public Stream<Tuple> stream() {
         return streamSupplier.get();
     }

@@ -89,7 +89,7 @@ public class Project extends UnaryOperator {
         Set<Key> keyfilter = keys.stream().filter(p).collect(Collectors.toSet());
         if( keyfilter.isEmpty()){
             // no key is good
-            return new Keys(Key.candidate(this.attributes));
+            return new Keys(type.getLargestKey());
         }
         else{
             //on a filtrer les mauvaises clefs
@@ -99,15 +99,12 @@ public class Project extends UnaryOperator {
 
     public boolean isKeysPreserving(Keys keys){
         Predicate<Key> pred = (k)-> isKeyPreserving(k);
-        //Set<Key> keyfilter = keys.stream().filter(pred).collect(Collectors.toSet());
-        //return keyfilter.isEmpty();
         return keys.stream().anyMatch(pred);
 
     }
 
-
     public boolean isKeyPreserving(Key key){
-        return key.include(this.attributes);
+        return key.isSubSetOf(this.attributes);
     }
 
 }

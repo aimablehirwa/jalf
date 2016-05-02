@@ -89,7 +89,7 @@ public class KeyTest {
     public void testKeyRelationEquality(){
         Relation r1 = shipments();
         Relation r2 = shipments();
-        assertEquals(r1.getKeys().toList().get(0), r2.getKeys().toList().get(0));
+        assertEquals(r1.getKeys(), r2.getKeys());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class KeyTest {
                 tuple(LETTER, "e"),
                 tuple(LETTER, "k")
                 );
-        assertEquals(r1.getKeys().toList().get(0), r2.getKeys().toList().get(0));
+        assertEquals(r1.getKeys(), r2.getKeys());
     }
 
 }

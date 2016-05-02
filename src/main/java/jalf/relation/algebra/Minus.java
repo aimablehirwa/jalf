@@ -74,4 +74,5 @@ public class Minus extends BinaryOperator{
     protected Keys lazyComputeKey() {
         return this.left.getKeys();
     }
+
 }
